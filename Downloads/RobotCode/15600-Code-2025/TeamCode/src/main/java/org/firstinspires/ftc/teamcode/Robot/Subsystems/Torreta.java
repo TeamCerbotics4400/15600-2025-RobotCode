@@ -14,7 +14,7 @@ import com.seattlesolvers.solverslib.controller.PIDController;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Configurable
 @Config
-public class    Torreta extends SubsystemBase {
+public class Torreta extends SubsystemBase {
 
     CRServo torreta;
     DcMotorEx intake;
@@ -75,7 +75,7 @@ public class    Torreta extends SubsystemBase {
 
         double power = pidController.calculate(currentDegrees);
 
-        if ((currentDegrees <= -220 && power < 0) || (currentDegrees >= 50 && power > 0)) {
+        if ((currentDegrees <= -200 && power < 0) || (currentDegrees >= 55 && power > 0)) {
             power = 0;
         }
 //65   -196

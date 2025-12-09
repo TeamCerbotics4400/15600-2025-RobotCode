@@ -21,11 +21,11 @@ public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
 
             .mass(15)
-            .forwardZeroPowerAcceleration(73.55723732713686)
-            .lateralZeroPowerAcceleration(93.68180977042557)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0,0,0,0))
-            .headingPIDFCoefficients(new PIDFCoefficients(0,0,0,0))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0, 0, 0, 0, 0))
+            .forwardZeroPowerAcceleration(-45.82343139580664)
+            .lateralZeroPowerAcceleration(-107.00879103289743)
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.0625,0,0,0.001))
+            .headingPIDFCoefficients(new PIDFCoefficients(1,0,0.001,0.02))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.0025, 0, 0, 0.6 ,0))
             .centripetalScaling(0)
             ;
 
@@ -37,16 +37,16 @@ public class Constants {
             .leftFrontMotorName("lf")
             .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .useBrakeModeInTeleOp(true)
-            .xVelocity(0)
-            .yVelocity(0)
+            .xVelocity( 69.97985167015256)
+            .yVelocity(46.9856009896346)
             ;
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(6.5*0.98837)
-            .strafePodX(.35)
+            .forwardPodY(6.4)//*0.98837
+            .strafePodX(0.35)//0.35
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("pinpoint")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
@@ -57,7 +57,12 @@ public class Constants {
             ;
 
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.007, 100, 1, 1);
+    public static PathConstraints pathConstraints = new PathConstraints(
+            0.995,
+            100,
+            1,
+            1
+    );
 
 
     public static Follower createFollower(HardwareMap hardwareMap) {

@@ -60,8 +60,8 @@ public class TorretaCommand extends CommandBase {
         double heading =  Math.toDegrees(m_drive.getPose().getHeading());
 
         double turretSetpoint = -(targetAngle - heading);
-        if (turretSetpoint > 50) turretSetpoint = 50;
-        if (turretSetpoint < -220) turretSetpoint = -220;
+        if (turretSetpoint > 60) turretSetpoint = 60;
+        if (turretSetpoint < -200) turretSetpoint = -200;
 
 
          m_turret.setTurretPosition(turretSetpoint);

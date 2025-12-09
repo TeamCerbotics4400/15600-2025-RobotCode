@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.Robot.Subsystems;
 
 
-//import com.acmerobotics.dashboard.FtcDashboard;
-
-
 import com.bylazar.panels.Panels;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
@@ -20,19 +17,21 @@ import org.firstinspires.ftc.teamcode.Robot.Constants;
 import org.firstinspires.ftc.teamcode.utils.Drawing;
 
 import java.util.Locale;
-
 public class MecanumDriveTrain extends SubsystemBase {
 
-    //y = 9, x = 8.2
     HardwareMap hw;
     Telemetry tl;
     Follower m_follower;
-    public Panels panels;
+    Panels panels;
     static PoseHistory poseHistory;
+
     static TelemetryManager telemetryM;
-    Pose poseAzul = new Pose(0, 136);
-    Pose poseRoja = new Pose(140, 144);
+    Pose azulGOAL = new Pose(25, 144);
+    Pose rojoGOAL = new Pose(140, 144);
+
     boolean isBlueAlliance;
+
+
     public MecanumDriveTrain(HardwareMap hw, Telemetry tl, boolean isBlueAlliance) {
         this.hw = hw;
         this.tl = tl;
@@ -40,27 +39,27 @@ public class MecanumDriveTrain extends SubsystemBase {
         poseHistory = m_follower.getPoseHistory();
         this.isBlueAlliance = isBlueAlliance;
         if(isBlueAlliance){
-            this.m_follower.setPose(new Pose(8, 0, Math.toRadians(90))); //54.6
+            this.m_follower.setPose(new Pose(64, 8, Math.toRadians(90)));
         }else{
-            this.m_follower.setPose(new Pose(0, 0, Math.toRadians(0)));
+            this.m_follower.setPose(new Pose(80, 8, Math.toRadians(90)));
         }
         setSubsystem("DriveTrain");
 
 
     }
 
-
     public double obtenerDistanciaTarget(boolean isBlueAlliance){
         double distancia = 0;
         Pose poseActual = m_follower.getPose();
-          if(isBlueAlliance){
-            distancia = Math.sqrt(Math.pow(poseAzul.getX() + poseActual.getY(), 2) + Math.pow(poseAzul.getY() - poseActual.getX(), 2));
+        if(isBlueAlliance){
+            distancia = Math.sqrt(Math.pow(azulGOAL.getX() - poseActual.getX(), 2) + Math.pow(azulGOAL.getY() - poseActual.getY(), 2));
         }else{
-            distancia =Math.sqrt(Math.pow(poseRoja.getX() - poseActual.getX(), 2) + Math.pow(poseRoja.getY() - poseActual.getY(), 2));
+            distancia =Math.sqrt(Math.pow(rojoGOAL.getX() - poseActual.getX(), 2) + Math.pow(rojoGOAL.getY() - poseActual.getY(), 2));
         }
 
         return distancia;
     }
+
 
     public void drawCurrent() {
         try {
@@ -80,7 +79,8 @@ public class MecanumDriveTrain extends SubsystemBase {
 
     public void startTeleOp() {m_follower.startTeleopDrive();}
 
-    public void followPath(PathChain path) {m_follower.followPath(path);}
+    //ESTA DE AQUI ABAJO CHAD
+    public void followPath(PathChain path) {m_follower.followPath(path);}//**********************
 
     public PathBuilder pathBuldier() {return m_follower.pathBuilder();}
 
@@ -96,7 +96,7 @@ public class MecanumDriveTrain extends SubsystemBase {
 
     public void setDrive(double y, double x, double turn, boolean robotCentric) {
         if(isBlueAlliance) {
-            m_follower.setTeleOpDrive(y, x, turn, true);
+            m_follower.setTeleOpDrive(-y, -x, turn, false);
         }else{
             m_follower.setTeleOpDrive(y, x, turn, false);
         }
@@ -122,17 +122,19 @@ public class MecanumDriveTrain extends SubsystemBase {
 
     @Override
     public void periodic() {
-        drawCurrentAndHistory();
 
         double headingDeg = normalizeDegrees(getPose().getHeading() * 180 / Math.PI);
+
         String pose = String.format(
                 Locale.US,
-                "X: %.3f, Y: %.3f, H: %.3f",
-                getPose().getX(),
+                "Y: %.3f, X: %.3f, H: %.3f",
                 getPose().getY(),
+                getPose().getX(),
                 headingDeg
         );
 
+
+        drawCurrentAndHistory();
         String velocity = String.format(
                 Locale.US,
                 "X: %.3f, Y: %.3f, Magnitude: %.3f",
@@ -141,12 +143,10 @@ public class MecanumDriveTrain extends SubsystemBase {
                 getVelocity().getMagnitude()
         );
 
-
-
-        tl.addData("Distancia azul",obtenerDistanciaTarget(true));
-        tl.addData("Distancia roja",obtenerDistanciaTarget(false));
         tl.addData(getSubsystem(), pose);
         tl.addData(getSubsystem(), velocity);
+        tl.addData("Distancia a Rojo", obtenerDistanciaTarget(false));
+        tl.addData("Distancia a Azul", obtenerDistanciaTarget(true));
     }
 
 }

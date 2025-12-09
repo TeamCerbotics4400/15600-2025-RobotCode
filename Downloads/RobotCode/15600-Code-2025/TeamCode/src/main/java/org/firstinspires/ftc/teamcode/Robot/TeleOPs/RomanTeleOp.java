@@ -14,6 +14,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.Robot.Commands.DriveCommand;
+import org.firstinspires.ftc.teamcode.Robot.Commands.PathCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.SmartShootCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.TorretaCommand;
 
@@ -37,13 +38,12 @@ public class RomanTeleOp extends CommandOpMode {
     @Override
     public void initialize() {
         m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, true);
-        m_driveTrain.startPose(new Pose(0, 0, Math.toRadians(0)));  //64,8
         m_shooter = new Shooter(hardwareMap, telemetry);
        m_feeder = new Feeder(hardwareMap,telemetry);
         m_torreta = new Torreta(hardwareMap, telemetry);
-        m_intake = new Intake(hardwareMap);
+        m_intake = new Intake(hardwareMap, telemetry);
 
-        register(m_driveTrain, m_shooter, m_torreta);
+        register(m_driveTrain, m_shooter, m_torreta);schedule();
 
         GamepadEx g1 = new GamepadEx(gamepad1);
         GamepadEx g2 = new GamepadEx(gamepad2);
@@ -84,47 +84,78 @@ public class RomanTeleOp extends CommandOpMode {
                         ));
 /*Torreta*/
         g1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-                .whenPressed(new TorretaCommand(m_driveTrain, m_torreta, telemetry, new Pose2d(0, 144, Math.toRadians(0)))); //130 120
+                .whenPressed(new TorretaCommand(m_driveTrain,m_torreta,telemetry, new Pose2d(0,144, Math.toRadians(0))));
 
+        g1.getGamepadButton(GamepadKeys.Button.Y)
+                .whileHeld(
+                        new ParallelCommandGroup(
+                                new RunCommand(() -> m_shooter.setRPM((int)m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(false)))),
+                                new InstantCommand(() -> m_feeder.setCRSPower(1)),
+                                new SequentialCommandGroup(
+                                        new WaitCommand(3000),
+                                        new InstantCommand(() -> m_feeder.setPosition(.8,300)),
+                                        new WaitCommand(2000),
+                                        new InstantCommand(() -> m_feeder.setPosition(.8,1100)),
+                                        new WaitCommand(2000),
+                                        new InstantCommand(() -> m_feeder.setPosition(.8,1900)),
+                                        new WaitCommand(2000),
+                                        new InstantCommand(() -> m_feeder.setPosition(.8,2200)),
+                                        new WaitCommand(500),
+                                        new InstantCommand(() -> m_feeder.resetAfterShoot())
 
-        /*g1.getGamepadButton(GamepadKeys.Button.Y).whileHeld(new ParallelCommandGroup(
-                new RunCommand(
-                        () -> m_shooter.setRPM
-                                ((int)m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(false)))),
-               //new RunCommand(()-> m_feeder.setCRSPower(1)),
-                new SequentialCommandGroup(
-                        new RunCommand(() -> m_feeder.goToPosition(1,1835))
-                                .interruptOn(()->m_feeder.atPosition(1835,5)),
-                            new ParallelRaceGroup(
-
-                                    new WaitCommand(3000)
-                                    ),
-                        new InstantCommand(()->m_feeder.setFalseNodeValue(0)),
-                        new RunCommand(() -> m_feeder.goToPosition(1,1100))
-                                .interruptOn(()->m_feeder.atPosition(1100,5)),
-                        new ParallelRaceGroup(
-                              new RunCommand(()->m_feeder.setCRSPower(1)),
-                                new WaitCommand(1000)
-                        ),
-                        new InstantCommand(()->m_feeder.setFalseNodeValue(1)),
-                        new RunCommand(() -> m_feeder.goToPosition(1,335))
-                                .interruptOn(()->m_feeder.atPosition(330,5)),
-                        new ParallelRaceGroup(
-                        new InstantCommand(()->m_feeder.setFalseNodeValue(2)),
-                                new WaitCommand(1000)
-                        ),
-                        new RunCommand(() -> m_feeder.goToPosition(0.8,0)).interruptOn(()->m_feeder.atPosition(0,1)),
-                        new WaitCommand(500),
-                        new InstantCommand(() -> m_feeder.resetAfterShoot())
-
-
-                )))
+                                )
+                        )
+                )
                 .whenReleased(new ParallelCommandGroup(
-                        new InstantCommand(()-> m_feeder.globalSlotPosition = 0),
-                        //new InstantCommand(() -> m_shooter.setPower(0)),
-                        new InstantCommand(() -> m_feeder.setCRSPower(0)),
-                        new RunCommand(()-> m_shooter.setRPM(0))));
-*/
+                        //    new InstantCommand(() -> m_feeder.setPosition(0)),
+                        new InstantCommand(() -> m_shooter.setPower(0)),
+                        new InstantCommand(()-> m_shooter.setRPM(0)),
+                        new InstantCommand(() -> m_feeder.setCRSPower(0))));
+
+/*
+        g1.getGamepadButton(GamepadKeys.Button.Y)
+                .whileHeld(
+                        new ParallelCommandGroup(
+                                new RunCommand(() -> m_shooter.setRPM((int)m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(false)))),
+                                new SequentialCommandGroup(
+                                   new WaitCommand(1000),
+                                        new RunCommand(() -> m_feeder.goToPosition(0.8,300)).interruptOn(()->m_feeder.getPosition() >= 290),
+
+                        new ParallelCommandGroup(
+
+                        new WaitCommand(3000).interruptOn(()-> m_shooter.atRPMs(m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(true)), 30)),
+                        new RunCommand(()->m_feeder.setCRSPower(1))),
+                                        new RunCommand(()->m_feeder.setCRSPower(0)),
+
+        new InstantCommand(() -> m_feeder.goToPosition(.8,1100)).interruptOn(()->m_feeder.getPosition() >= 1090),
+                                        new ParallelCommandGroup(
+
+                                                new WaitCommand(3000).interruptOn(()-> m_shooter.atRPMs(m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(true)), 30)),
+                                                new RunCommand(()->m_feeder.setCRSPower(1))
+                                        ),
+                                        new RunCommand(()->m_feeder.setCRSPower(0)),
+
+                                        new RunCommand( () -> m_feeder.goToPosition(.8,1900)).interruptOn(()->m_feeder.getPosition() >= 1890),
+
+                                        new ParallelCommandGroup(
+
+                                                new WaitCommand(3000).interruptOn(()-> m_shooter.atRPMs(m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(true)), 30)),
+                                                new RunCommand(()->m_feeder.setCRSPower(1))
+                                        ),
+                                        new RunCommand(()->m_feeder.setCRSPower(0)),
+                                        new InstantCommand(() -> m_feeder.goToPosition(0.8,2150)).interruptOn(()->m_feeder.getPosition() >= 2100),
+                                        new WaitCommand(500),
+                                        new InstantCommand(() -> m_feeder.resetAfterShoot())
+
+                                )
+                        )
+                )
+                .whenReleased(new ParallelCommandGroup(
+                        //    new InstantCommand(() -> m_feeder.setPosition(0)),
+                        new InstantCommand(() -> m_shooter.setPower(0)),
+                        new InstantCommand(()-> m_shooter.setRPM(0)),
+                        new InstantCommand(() -> m_feeder.setCRSPower(0))));
+/*
 
         g1.getGamepadButton(GamepadKeys.Button.Y)
                 .whileHeld(new SmartShootCommand(
@@ -144,7 +175,7 @@ public class RomanTeleOp extends CommandOpMode {
                                 new InstantCommand(()->m_feeder.goToPosition(0,0)),
                                 new InstantCommand(()-> telemetry.log().add("It did reset"))
                         )
-                );
+                );*/
 
 
 
@@ -154,7 +185,7 @@ public class RomanTeleOp extends CommandOpMode {
 
         g1.getGamepadButton(GamepadKeys.Button.X)
                 .whileHeld(new ParallelCommandGroup(
-                        new RunCommand(() -> m_shooter.setPower(-.5)),
+                        new RunCommand(() -> m_shooter.setPower(1)),
                         new RunCommand(() -> m_feeder.setCRSPower(-1))))
                 .whenReleased(new ParallelCommandGroup(
                         new RunCommand(() -> m_shooter.setPower(0)),

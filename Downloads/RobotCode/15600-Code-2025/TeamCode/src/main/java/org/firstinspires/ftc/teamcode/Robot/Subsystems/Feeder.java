@@ -14,10 +14,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDController;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.utils.Debouncer;
+
+import java.util.function.BooleanSupplier;
 
 @Configurable
 @Config
@@ -61,12 +61,14 @@ public class Feeder extends SubsystemBase {
 
     private int currentSlotIndex = 0;
 
-    public static double P = 0.01;
+    public static double P = 0.002;
     public static double I = 0;
-    public static double D= 0;
+    public static double D= 0.000108;
     FtcDashboard dashboard;
 
     public PIDController m_controller = new PIDController(P,I,D);
+
+    private Debouncer ballDebouncer = new Debouncer(0.5, Debouncer.DebounceType.kRising);//0.35
     public Feeder(HardwareMap hardwareMap, Telemetry telemetry){
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
@@ -81,7 +83,6 @@ public class Feeder extends SubsystemBase {
 
 
         motorLavadora = hardwareMap.get(DcMotorEx.class, "lavadora");
-        motorLavadora.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorLavadora.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motorLavadora.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -99,6 +100,12 @@ public class Feeder extends SubsystemBase {
         m_controller.setSetPoint(targetPositionTicks);
     }
 
+    public void setPosition(double power,int pos){
+        motorLavadora.setPower(power);
+        motorLavadora.setTargetPosition(pos);
+        motorLavadora.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
     public void setFalseNodeValue(int val){
         slots[val].hasBallInside = false;
     }
@@ -109,7 +116,7 @@ public class Feeder extends SubsystemBase {
                 if (slots[globalSlotPosition].hasBallInside) {
                     goToNextSlot();
                 } else {
-                    //   slots[globalSlotPosition].hasBallInside = detectBall(s1);
+
                 }
                 goToPosition(1, globalTargetPosiion);
             }
@@ -117,7 +124,7 @@ public class Feeder extends SubsystemBase {
     }
 
     public boolean detectBall(ColorSensor sensor) {
-        return sensor.alpha() > 57 && sensor.alpha() < 1200;
+        return sensor.alpha() > 60 && sensor.alpha() < 1200;
     }
 
     public void goToNextSlot(){
@@ -140,7 +147,7 @@ public class Feeder extends SubsystemBase {
     }
 
     public void resetEncoders(){
-        motorLavadora.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //  motorLavadora.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLavadora.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
@@ -166,9 +173,14 @@ public class Feeder extends SubsystemBase {
         return limitSwitch.isPressed();
     }
     public void resetAfterShoot() {
+
+
+        if(limitSwitchGotPressed()){
         motorLavadora.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLavadora.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         m_controller.setSetPoint(0);
+
+    }
     }
 
     public int detectColor(ColorSensor sensor) {
@@ -179,23 +191,22 @@ public class Feeder extends SubsystemBase {
         }
     }
 
-    private void updateSlotsUsingSensor() {
-        boolean current = detectBall(s1);  // true = ball detected
+    private void updateSlotsUsingSensor() {// true = ball detected
         if (atPosition(globalTargetPosiion, 10) && !motorLavadora.isBusy()) {
-            if (current){
-            if(
-                    (globalSlotPosition == 1 && detectBall(s2))
-                            || globalSlotPosition == 0
-                            || (globalSlotPosition == 2 && detectBall(s2) && detectBall(s3))){
+            if (ballDebouncer.calculate(detectBall(s1))){
+                if(
+                        (globalSlotPosition == 1 && detectBall(s2))
+                                || globalSlotPosition == 0
+                                || (globalSlotPosition == 2 && detectBall(s2) && detectBall(s3))){
 
-            slots[globalSlotPosition].hasBallInside = true;
+                    slots[globalSlotPosition].hasBallInside = true;
 
-            currentSlotIndex++;
-            if (currentSlotIndex >= 3) {
-                currentSlotIndex = 0;
+                    currentSlotIndex++;
+                    if (currentSlotIndex >= 3) {
+                        currentSlotIndex = 0;
+                    }
                 }
             }
-        }
         }
     }
 
@@ -252,6 +263,8 @@ public class Feeder extends SubsystemBase {
         */
 
         motorLavadora.setPower(m_controller.calculate(getPosition()));
+
+        telemetry.addData("Debouncer", ballDebouncer.calculate(detectBall(s1)));
 
         telemetry.addData("S1 hasballInside", slots[0].hasBallInside);
         telemetry.addData("S2 hasballInside", slots[1].hasBallInside);

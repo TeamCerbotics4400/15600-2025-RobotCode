@@ -14,9 +14,9 @@ public class DriveCommand extends CommandBase {
 
     public DriveCommand(MecanumDriveTrain driveTrain, DoubleSupplier y, DoubleSupplier x, DoubleSupplier turn, boolean robotCentric) {
         this.m_driveTrain = driveTrain;
-        this.y = turn;
+        this.y = y;//turn
         this.x = x;
-        this.turn = y;
+        this.turn = turn;
         this.robotCentric = robotCentric;
 
         addRequirements(driveTrain);
@@ -29,7 +29,7 @@ public class DriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        m_driveTrain.setDrive(y.getAsDouble()*0.5, -x.getAsDouble()*0.5, -turn.getAsDouble() * 0.5, robotCentric);
+        m_driveTrain.setDrive(y.getAsDouble(), -x.getAsDouble(), -turn.getAsDouble(), robotCentric);
         m_driveTrain.update();
     }
 
