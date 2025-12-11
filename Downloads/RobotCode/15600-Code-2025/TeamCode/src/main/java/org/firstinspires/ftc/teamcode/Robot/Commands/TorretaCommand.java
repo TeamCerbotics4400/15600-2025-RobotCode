@@ -33,6 +33,8 @@ public class TorretaCommand extends CommandBase {
         this.m_turret = m_turret;
         this.telemetry = telemetry;
         this.targetPoint = targetPoint;
+
+        addRequirements(m_turret);
     }
     public double normalizedAngle(double angle){
         angle = angle % 360;
@@ -60,8 +62,8 @@ public class TorretaCommand extends CommandBase {
         double heading =  Math.toDegrees(m_drive.getPose().getHeading());
 
         double turretSetpoint = -(targetAngle - heading);
-        if (turretSetpoint > 60) turretSetpoint = 60;
-        if (turretSetpoint < -200) turretSetpoint = -200;
+        if (turretSetpoint > 75) turretSetpoint = 75;
+        if (turretSetpoint < -220) turretSetpoint = -220;
 
 
          m_turret.setTurretPosition(turretSetpoint);

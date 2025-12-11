@@ -3,6 +3,10 @@ package org.firstinspires.ftc.teamcode.Autos.AutosRed;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.RunCommand;
+
+import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
@@ -23,7 +27,11 @@ public class Red extends CommandOpMode {
         register(m_drive, m_shooter, m_torreta, m_intake, m_feeder);
         Follower follower = m_drive.getFollower();
         new PathsRed(follower);
-        red = new AutoSequenceRed(m_drive, m_shooter, m_intake, m_torreta, m_feeder);
+        red = new AutoSequenceRed(m_drive, m_shooter, m_intake, m_torreta, m_feeder, telemetry);
         schedule(red);
+
+        schedule(new RunCommand(()-> {
+            telemetry.update();
+        }));
     }
 }

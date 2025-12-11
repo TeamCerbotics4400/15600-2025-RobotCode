@@ -7,8 +7,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
 
-public class SmartShootCommand extends SequentialCommandGroup {
-
+public class SmartShootCommandRed extends SequentialCommandGroup {
     int selectedIndex = 0;
     int numberOfBalls = 0;
 
@@ -16,32 +15,38 @@ public class SmartShootCommand extends SequentialCommandGroup {
     public Telemetry tl;
 
     public Feeder feeder;
-    public SmartShootCommand(MecanumDriveTrain drive,
-                             Shooter shooter,
-                             Feeder feeder,
-                             Telemetry tl) {
+
+    public boolean Auto = false;
+    public  int targetRPMs = 0;
+    public SmartShootCommandRed(MecanumDriveTrain drive,
+                                 Shooter shooter,
+                                 Feeder feeder,
+                                 Telemetry tl,boolean Auto, int targetRPMs) {
 
         this.shooter = shooter;
         this.tl = tl;
         this.feeder = feeder;
+        this.Auto = Auto;
+        this.targetRPMs = targetRPMs;
         addCommands(
 
                 new InstantCommand(()->numberOfBalls = getDetectedBallCount(feeder)),
                 // 1. Spin shooter to RPM
-                new RunCommand(() -> shooter.setRPM(
+                new RunCommand(() -> shooter.setRPM(!Auto ?
                         (int) shooter.getInterpolatedShoot(
                                 drive.obtenerDistanciaTarget(false)
-                        ))
+                        ) : targetRPMs)
                 ).interruptOn(() ->
                         true
                 ),
-
                 // 2. While feeder has balls → shoot next ball
                 new SequentialCommandGroup(
                         new WaitUntilCommand(() -> feederHasBalls(feeder)),
                         new RepeatCommand(
 
                                 new SequentialCommandGroup(
+
+                                        new InstantCommand(()->tl.log().add("" + getDetectedBallCount(feeder))),
 
                                         // Select next slot
                                         new InstantCommand(() -> {
@@ -52,7 +57,7 @@ public class SmartShootCommand extends SequentialCommandGroup {
                                                 feeder.goToPosition(1, feeder.globalTargetPosiion)
 
                                         ).interruptOn(() ->
-                                                feeder.atPosition(feeder.globalTargetPosiion, 2)
+                                                feeder.atPosition(feeder.globalTargetPosiion, 100)
                                                         &&
                                                         shooter.atRPMs(
                                                                 shooter.getInterpolatedShoot(
@@ -64,11 +69,12 @@ public class SmartShootCommand extends SequentialCommandGroup {
                                         new ParallelRaceGroup(
 
                                                 new SequentialCommandGroup(
-                                                        new WaitCommand(200),
-                                                       new RunCommand(() -> feeder.setCRSPower(1))
+                                                        new WaitCommand(150),
+                                                        new RunCommand(() -> feeder.setCRSPower(1))
                                                 ),
-                                                new WaitCommand(2000)
+                                                new WaitCommand(900)
                                         ),
+                                        new InstantCommand(()->tl.log().add("pow")),
 
                                         // Mark slot empty
                                         new InstantCommand(() -> {
@@ -129,13 +135,13 @@ public class SmartShootCommand extends SequentialCommandGroup {
         if(numberOfBalls == 3){
             if (f.getSlotBallState(2)) {
                 selectedIndex = 2;
-                return 1930;
+                return 1920;
             } else if (f.getSlotBallState(1)) {
                 selectedIndex = 1;
-                return 1100;   // 2
+                return 1072;   // 2
             } else if (f.getSlotBallState(0)) {
                 selectedIndex = 0;
-                return 310; //bien
+                return 370; //bien
             }
 
 

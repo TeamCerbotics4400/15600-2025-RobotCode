@@ -38,6 +38,8 @@ public class Feeder extends SubsystemBase {
         SLOT_3
     }
 
+
+
     public int globalSlotPosition = 0;
     public int globalTargetPosiion = 0;
     private static class SlotClass{
@@ -63,12 +65,16 @@ public class Feeder extends SubsystemBase {
 
     public static double P = 0.002;
     public static double I = 0;
+
+
     public static double D= 0.000108;
     FtcDashboard dashboard;
 
+    private boolean Ballinside = false;
+
     public PIDController m_controller = new PIDController(P,I,D);
 
-    private Debouncer ballDebouncer = new Debouncer(0.5, Debouncer.DebounceType.kRising);//0.35
+    private Debouncer ballDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kRising);//0.35
     public Feeder(HardwareMap hardwareMap, Telemetry telemetry){
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
@@ -124,8 +130,9 @@ public class Feeder extends SubsystemBase {
     }
 
     public boolean detectBall(ColorSensor sensor) {
-        return sensor.alpha() > 60 && sensor.alpha() < 1200;
+        return sensor.alpha() > 70 && sensor.alpha() < 1200;
     }
+
 
     public void goToNextSlot(){
         if(globalSlotPosition == 0){
@@ -172,15 +179,14 @@ public class Feeder extends SubsystemBase {
     public boolean limitSwitchGotPressed(){
         return limitSwitch.isPressed();
     }
+
+
     public void resetAfterShoot() {
-
-
         if(limitSwitchGotPressed()){
         motorLavadora.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLavadora.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         m_controller.setSetPoint(0);
-
-    }
+        }
     }
 
     public int detectColor(ColorSensor sensor) {
@@ -218,6 +224,14 @@ public class Feeder extends SubsystemBase {
         slots[0].hasBallInside = false;
         slots[1].hasBallInside = false;
         slots[2].hasBallInside = false;
+
+    }
+
+    public void AllTrue(){
+        slots[0].hasBallInside = true;
+        slots[1].hasBallInside = true;
+        slots[2].hasBallInside = true;
+
 
     }
 
@@ -266,7 +280,7 @@ public class Feeder extends SubsystemBase {
 
         telemetry.addData("Debouncer", ballDebouncer.calculate(detectBall(s1)));
 
-        telemetry.addData("S1 hasballInside", slots[0].hasBallInside);
+        telemetry.addData("S1 hasballInside", slots[0].hasBallInside );
         telemetry.addData("S2 hasballInside", slots[1].hasBallInside);
         telemetry.addData("S3 hasballInside", slots[2].hasBallInside);
         telemetry.addData("S1 alpha", s1.alpha());

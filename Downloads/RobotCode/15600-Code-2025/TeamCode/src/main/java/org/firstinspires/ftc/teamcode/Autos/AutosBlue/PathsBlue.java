@@ -7,48 +7,79 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 
 public class PathsBlue {
-    public static  PathChain Spike1;
-    public static PathChain Shooter1;
-    public static PathChain Spike2;
-    public static PathChain Shooter2;
+    public static PathChain Shoot1;
+    public static PathChain GoToSpike1;
+    public static PathChain Intake1;
+    public static PathChain Shoot2;
+    public static PathChain GoToSpike2;
+    public static PathChain Intake2;
+    public static PathChain Shoot3;
+    public static PathChain Final;
 
     public PathsBlue(Follower follower) {
-        Spike1 = follower
+        Shoot1 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierCurve(
-                                new Pose(62.690, 8.000),
-                                new Pose(76.023, 38.738),
-                                new Pose(9.357, 35.463)
-                        )
+                        new BezierLine(new Pose(64.000, 8.000), new Pose(64.000, 28.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+                .build();
+
+        GoToSpike1 = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(64.000, 28.000), new Pose(40.467, 35.229))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90))
                 .build();
 
-        Shooter1 = follower
+        Intake1 = follower
                 .pathBuilder()
-                .addPath(new BezierLine(new Pose(9.357, 35.463), new Pose(63.391, 8.000)))
+                .addPath(
+                        new BezierLine(new Pose(40.467, 35.229), new Pose(24.000, 35.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90))
+                .build();
+
+        Shoot2 = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(24.000, 35.000), new Pose(64.000, 28.000))
+                )
                 .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
                 .build();
 
-        Spike2 = follower
+        GoToSpike2 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierCurve(
-                                new Pose(63.391, 8.000),
-                                new Pose(74.853, 66.340),
-                                new Pose(11.462, 59.556)
-                        )
+                        new BezierLine(new Pose(64.000, 28.000), new Pose(40.234, 58.855))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90))
                 .build();
 
-        Shooter2 = follower
+        Intake2 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(11.462, 59.556), new Pose(63.625, 8.000))
+                        new BezierLine(new Pose(40.234, 58.855), new Pose(24.000, 58.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90))
+                .build();
+
+        Shoot3 = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(24.000, 58.000), new Pose(64.000, 28.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
+                .build();
+
+        Final = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(new Pose(64.000, 28.000), new Pose(40.000, 32.000))
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();
     }
-}
+    }
+

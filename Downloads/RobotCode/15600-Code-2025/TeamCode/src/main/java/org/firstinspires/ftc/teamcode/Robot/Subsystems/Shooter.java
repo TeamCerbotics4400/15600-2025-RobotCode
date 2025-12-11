@@ -20,21 +20,25 @@ import org.firstinspires.ftc.teamcode.utils.InterpolatingTreeMap;
 
 public class Shooter extends SubsystemBase {
 
-    public static double offset = -8;
+    public static double offset = 0;
 
     static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kDistanceToShooterSpeed = new InterpolatingTreeMap<>();
     private static Shooter instance = null;
 
 
     static {
-        kDistanceToShooterSpeed.put(new InterpolatingDouble(147.5+ offset), new InterpolatingDouble(3700.0));
-        kDistanceToShooterSpeed.put(new InterpolatingDouble(102.17+offset), new InterpolatingDouble(3100.0));
-        kDistanceToShooterSpeed.put(new InterpolatingDouble(83.6+offset), new InterpolatingDouble(3000.0));
-        kDistanceToShooterSpeed.put(new InterpolatingDouble(81.6+offset), new InterpolatingDouble(2800.0));
-        kDistanceToShooterSpeed.put(new InterpolatingDouble(57.53+offset), new InterpolatingDouble(2650.0));
+        /*Lejos*/
+        kDistanceToShooterSpeed.put(new InterpolatingDouble(158.69+ offset), new InterpolatingDouble(3900.0));
+        kDistanceToShooterSpeed.put(new InterpolatingDouble(148.69+ offset), new InterpolatingDouble(3800.0));
+        kDistanceToShooterSpeed.put(new InterpolatingDouble(128.93), new InterpolatingDouble(3650.0));
+        /*Medio*/
+        kDistanceToShooterSpeed.put(new InterpolatingDouble(85.91), new InterpolatingDouble(3150.0));
+        kDistanceToShooterSpeed.put(new InterpolatingDouble(74.369), new InterpolatingDouble(3000.0));
 
-        //kDistanceToShooterSpeed.put(new InterpolatingDouble(150.0), new InterpolatingDouble(2650.0));
-
+        /*Cerca*/
+        kDistanceToShooterSpeed.put(new InterpolatingDouble(63+offset), new InterpolatingDouble(2900.0));
+        kDistanceToShooterSpeed.put(new InterpolatingDouble(58.34+offset), new InterpolatingDouble(2750.0));
+        kDistanceToShooterSpeed.put(new InterpolatingDouble(31.25+offset), new InterpolatingDouble(2600.0));
     }
 
 
@@ -44,7 +48,7 @@ public class Shooter extends SubsystemBase {
     public static double D = 0;
     public  static   double F = 13.7;
 
-    public static int targetSpeed = 0;
+    public static double targetSpeed = 0;
 
 
     private double oldP, oldI, oldD, oldF;
@@ -77,6 +81,7 @@ public class Shooter extends SubsystemBase {
 
 
     public double getInterpolatedShoot(double distance){
+        targetSpeed = kDistanceToShooterSpeed.getInterpolated(new InterpolatingDouble(distance)).value;
         return kDistanceToShooterSpeed.getInterpolated(new InterpolatingDouble(distance)).value;
     }
 

@@ -20,7 +20,7 @@ public class Torreta extends SubsystemBase {
     DcMotorEx intake;
     private double oldP, oldI, oldD, oldF;
 
-    private static double P = 0.015 ;//0.008
+    private static double P = 0.015 ;//0.015
     private static double I = 0.05;
     private static double D = 0.0015;//
 
@@ -75,7 +75,7 @@ public class Torreta extends SubsystemBase {
 
         double power = pidController.calculate(currentDegrees);
 
-        if ((currentDegrees <= -200 && power < 0) || (currentDegrees >= 55 && power > 0)) {
+        if ((currentDegrees <= -220 && power < 0) || (currentDegrees >= 75 && power > 0)) {
             power = 0;
         }
 //65   -196
@@ -87,7 +87,7 @@ public class Torreta extends SubsystemBase {
         //elemetry.addData("Torreta Posicion", intake.getCurrentPosition());
         telemetry.addData("Torreta grados", currentDegrees);
         //telemetry.addData("Torreta setpoint", pidController.getSetPoint());
-       // telemetry.addData("PID output", power);
+        telemetry.addData("PID output", power);
         //telemetry.addData("Error extention", pidController.getPositionError());
         //telemetry.addData("I value", pidController.getI());
 /*

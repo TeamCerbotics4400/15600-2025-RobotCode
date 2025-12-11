@@ -23,7 +23,7 @@ public class Blue extends CommandOpMode {
         register(m_drive, m_shooter, m_torreta, m_intake, m_feeder);
         Follower follower = m_drive.getFollower();
         new PathsBlue(follower);
-        blue = new AutosequenceBlue(m_drive, m_shooter, m_intake, m_torreta, m_feeder);
+        blue = new AutosequenceBlue(m_drive, m_shooter, m_intake, m_torreta, m_feeder, telemetry);
         schedule(blue);
     }
 }

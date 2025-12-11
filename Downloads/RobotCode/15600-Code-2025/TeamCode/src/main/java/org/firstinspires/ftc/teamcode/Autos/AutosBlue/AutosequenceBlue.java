@@ -2,22 +2,19 @@ package org.firstinspires.ftc.teamcode.Autos.AutosBlue;
 
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
-import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot.Commands.PathCommand;
-import org.firstinspires.ftc.teamcode.Robot.Commands.SmartShootCommand;
+import org.firstinspires.ftc.teamcode.Robot.Commands.SmartShootCommandBLue;
 import org.firstinspires.ftc.teamcode.Robot.Commands.TorretaCommand;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Torreta;
-
-import java.nio.file.Path;
 
 public class AutosequenceBlue extends SequentialCommandGroup {
     MecanumDriveTrain m_drive;
@@ -27,43 +24,56 @@ public class AutosequenceBlue extends SequentialCommandGroup {
     Feeder m_feeder;
     Telemetry tl;
 
-public AutosequenceBlue(MecanumDriveTrain m_drive, Shooter m_shooter, Intake m_intake, Torreta m_torreta, Feeder m_feeder){
+public AutosequenceBlue(MecanumDriveTrain m_drive, Shooter m_shooter, Intake m_intake, Torreta m_torreta, Feeder m_feeder,Telemetry tl){
     this.m_drive = m_drive;
+    this.m_torreta = m_torreta;
     this.m_shooter = m_shooter;
     this.m_intake = m_intake;
-    this.m_torreta = m_torreta;
     this.m_feeder = m_feeder;
+    this.tl = tl;
 
     addRequirements(m_drive,m_shooter,m_intake,m_torreta,m_feeder);
 
     addCommands(
 
-
-          //  new TorretaCommand(m_drive,m_torreta,tl, new Pose2d(0,144,Math.toRadians(0))),
-            //new SmartShootCommand(m_drive, m_shooter, m_feeder, tl),//Disapara la primera ronda
-            new WaitCommand(500),
-
             new ParallelCommandGroup(
+                    new PathCommand(m_drive, PathsBlue.Shoot1)//Posicion disparo
+                      /* new InstantCommand(m_feeder::AllTrue),
+            new TorretaCommand(m_drive,m_torreta,tl, new Pose2d(16,135,Math.toRadians(0))),
+           new SmartShootCommandBLue(m_drive, m_shooter, m_feeder, tl),//Disapara la primera ronda
+            new WaitCommand(500),
+*/),
+            new PathCommand(m_drive, PathsBlue.GoToSpike1),
 
-           // new InstantCommand(()-> m_intake.setPower(1)),
+    new ParallelCommandGroup(
+
+          // new InstantCommand(()-> m_intake.setPower(1)),
             //new InstantCommand(()-> m_feeder.isIntaking = true),//agarra las pelotas
-            new PathCommand(m_drive, PathsBlue.Spike1)
+            new PathCommand(m_drive, PathsBlue.Intake1)
     ),
-            new WaitCommand(500),
-            new PathCommand(m_drive, PathsBlue.Shooter1),//Posicion disparo
-            new WaitCommand(500),
-            //new SmartShootCommand(m_drive, m_shooter, m_feeder, tl),//Dispara segunda ronda
-            new WaitCommand(500),
+           // new WaitCommand(500),
+            // new InstantCommand(()-> m_intake.setPower(0)),
+            new PathCommand(m_drive, PathsBlue.Shoot2),//Posicion disparo
+           /* new WaitCommand(500),
+            new SmartShootCommandBLue(m_drive, m_shooter, m_feeder, tl),//Dispara segunda ronda
+            new WaitCommand(500),*/
+
+            new PathCommand(m_drive, PathsBlue.GoToSpike2),
+
 
             new ParallelCommandGroup(
-                  //  new InstantCommand(()-> m_intake.setPower(1)),
+                    //new InstantCommand(()-> m_intake.setPower(1)),
                     //new InstantCommand(()-> m_feeder.isIntaking = true),//Agarra las ultimas pelotas
-                    new PathCommand(m_drive, PathsBlue.Spike2)
+                    new PathCommand(m_drive, PathsBlue.Intake2)
             ),
+           // new WaitCommand(500),
+            //new InstantCommand(()-> m_intake.setPower(0)),
+            new PathCommand(m_drive, PathsBlue.Shoot3),//Ultima posicion de disparo
             new WaitCommand(500),
-            new PathCommand(m_drive, PathsBlue.Shooter2),//Ultima posicion de disparo
-            new WaitCommand(500)
-           // new SmartShootCommand(m_drive, m_shooter, m_feeder, tl)
+            //new SmartShootCommandBLue(m_drive, m_shooter, m_feeder, tl)
+            new PathCommand(m_drive, PathsBlue.Final
+
+            )
             );
 
 }
