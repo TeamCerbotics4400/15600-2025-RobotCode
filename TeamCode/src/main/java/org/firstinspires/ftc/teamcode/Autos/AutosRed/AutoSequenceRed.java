@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Torreta;
 
-public class AutoSequenceRed extends SequentialCommandGroup {
+public class    AutoSequenceRed extends SequentialCommandGroup {
 
     MecanumDriveTrain m_drive;
     Shooter m_shooter;
