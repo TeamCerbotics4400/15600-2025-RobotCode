@@ -165,8 +165,8 @@ public class Shooter extends SubsystemBase {
 
        // telemetry.addData("shooter1 RPM", getLeftRPM());
         //telemetry.addData("shooter2 RPMS", getRightRPM());
-        telemetry.addData("shooter RPMS", getRPMS());
-        telemetry.addData("shooter target rpm", targetSpeed);
+       // telemetry.addData("shooter RPMS", getRPMS());
+        //telemetry.addData("shooter target rpm", targetSpeed);
 
         //telemetry.addData("power", shooter1.getPower());
         //telemetry.addData("vel sh1", shooter1.getVelocity());

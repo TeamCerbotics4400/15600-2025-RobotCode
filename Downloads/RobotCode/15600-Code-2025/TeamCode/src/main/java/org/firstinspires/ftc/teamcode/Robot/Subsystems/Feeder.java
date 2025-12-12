@@ -310,7 +310,7 @@ public class Feeder extends SubsystemBase {
         telemetry.addData("S1 inside", getSlotColorState(0));
         telemetry.addData("S2 inside", getSlotColorState(1));
         telemetry.addData("S3 inside", getSlotColorState(2));
-*/
+
         telemetry.addData("S1 state", getSlotBallState(0));
         telemetry.addData("S2 state", getSlotBallState(1));
         telemetry.addData("S3 state", getSlotBallState(2));

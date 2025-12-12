@@ -80,7 +80,7 @@ public class SmartShootCommandBLue extends SequentialCommandGroup {
                                                 feeder.goToPosition(1, targetPositionTicks)
 
                                         ).interruptOn(() ->
-                                                feeder.atPosition(feeder.globalTargetPosiion, 100)
+                                                feeder.atPosition(targetPositionTicks, 100)
                                                         &&
                                                         shooter.atRPMs(
                                                                 shooter.getInterpolatedShoot(
@@ -154,17 +154,17 @@ public class SmartShootCommandBLue extends SequentialCommandGroup {
     private int findNextSlotToShoot(Feeder f) {
         //-----------------Color----------------------
     if(Auto && numberOfBalls == 3 && (id == 21 || id == 22 || id == 23)) {
-        tl.log().add(""+arraySequence[3-getDetectedBallCount(f)]);
+      //  tl.log().add(""+arraySequence[3-getDetectedBallCount(f)]);
         if (f.getSlotBallState(2) && f.getSlotColorState(2) == arraySequence[3-getDetectedBallCount(f)]) {
-            tl.log().add("Index 2");
+        //    tl.log().add("Index 2");
             selectedIndex = 2;
             return 1920;
         } else if (f.getSlotBallState(1) && f.getSlotColorState(0) == arraySequence[3-getDetectedBallCount(f)]) {
-            tl.log().add("Index 1");
+          //  tl.log().add("Index 1");
             selectedIndex = 1;
             return 1072;
         } else if (f.getSlotBallState(0) && f.getSlotColorState(1) == arraySequence[3-getDetectedBallCount(f)]) {
-            tl.log().add("Index 0");
+            //tl.log().add("Index 0");
             selectedIndex = 0;
             return 370;
             }
@@ -172,7 +172,7 @@ public class SmartShootCommandBLue extends SequentialCommandGroup {
             //-----------------not Color----------------------
 
             if (numberOfBalls == 3) {
-                tl.log().add("using manual");
+              //  tl.log().add("using manual");
                 if (f.getSlotBallState(2)) {
                     selectedIndex = 2;
                     return 1920;
