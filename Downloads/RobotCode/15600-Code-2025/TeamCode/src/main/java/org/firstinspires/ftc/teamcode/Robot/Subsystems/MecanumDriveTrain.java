@@ -135,16 +135,8 @@ public class MecanumDriveTrain extends SubsystemBase {
 
 
         drawCurrentAndHistory();
-        String velocity = String.format(
-                Locale.US,
-                "X: %.3f, Y: %.3f, Magnitude: %.3f",
-                getVelocity().getXComponent(),
-                getVelocity().getYComponent(),
-                getVelocity().getMagnitude()
-        );
 
         tl.addData(getSubsystem(), pose);
-        tl.addData(getSubsystem(), velocity);
         tl.addData("Distancia a Rojo", obtenerDistanciaTarget(false));
         tl.addData("Distancia a Azul", obtenerDistanciaTarget(true));
     }

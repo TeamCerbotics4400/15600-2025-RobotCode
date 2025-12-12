@@ -17,27 +17,43 @@ public class SmartShootCommandBLue extends SequentialCommandGroup {
 
     int selectedIndex = 0;
     int numberOfBalls = 0;
+    int[] arraySequence;
 
     public Shooter shooter;
     public Telemetry tl;
 
     public Feeder feeder;
+    int id;
 
     public boolean Auto = false;
     private int targetRPMs = 0;
     public SmartShootCommandBLue(MecanumDriveTrain drive,
                                 Shooter shooter,
                                 Feeder feeder,
-                                Telemetry tl,boolean Auto,int targetRPMs) {
+                                Telemetry tl,boolean Auto,int targetRPMs, int id) {
 
         this.shooter = shooter;
         this.tl = tl;
         this.feeder = feeder;
         this.Auto = Auto;
         this.targetRPMs = targetRPMs;
+        this.id = id;
+
+        if(id == 21){   //GPP
+            arraySequence = new int[]{0,1,1};
+        }else if(id == 22){   //PGP
+            arraySequence = new int[]{1,0,1};
+        }else if(id == 23){   //PPG
+            arraySequence = new int[]{1,1,0};
+        }else{
+            arraySequence = new int[]{0,0,0};
+        }
         addCommands(
 
                 new InstantCommand(()->numberOfBalls = getDetectedBallCount(feeder)),
+
+
+
                 // 1. Spin shooter to RPM
                 new RunCommand(() -> shooter.setRPM(!Auto ?
                         (int) shooter.getInterpolatedShoot(
@@ -135,36 +151,51 @@ public class SmartShootCommandBLue extends SequentialCommandGroup {
 
     // Fixed priority → slot 2 → 1 → 0
     private int findNextSlotToShoot(Feeder f) {
-
-        if(numberOfBalls == 3){
-            if (f.getSlotBallState(2)) {
-                selectedIndex = 2;
-                return 1920;
-            } else if (f.getSlotBallState(1)) {
-                selectedIndex = 1;
-                return 1072;   // 2
-            } else if (f.getSlotBallState(0)) {
-                selectedIndex = 0;
-                return 370; //bien
+        //-----------------Color----------------------
+    if(Auto && numberOfBalls == 3 && (id == 21 || id == 22 || id == 23)) {
+        tl.log().add(""+arraySequence[3-getDetectedBallCount(f)]);
+        if (f.getSlotBallState(2) && f.getSlotColorState(2) == arraySequence[3-getDetectedBallCount(f)]) {
+            tl.log().add("Index 2");
+            selectedIndex = 2;
+            return 1920;
+        } else if (f.getSlotBallState(1) && f.getSlotColorState(0) == arraySequence[3-getDetectedBallCount(f)]) {
+            tl.log().add("Index 1");
+            selectedIndex = 1;
+            return 1072;
+        } else if (f.getSlotBallState(0) && f.getSlotColorState(1) == arraySequence[3-getDetectedBallCount(f)]) {
+            tl.log().add("Index 0");
+            selectedIndex = 0;
+            return 370;
             }
+        } else {
+            //-----------------not Color----------------------
 
+            if (numberOfBalls == 3) {
+                tl.log().add("using manual");
+                if (f.getSlotBallState(2)) {
+                    selectedIndex = 2;
+                    return 1920;
+                } else if (f.getSlotBallState(1)) {
+                    selectedIndex = 1;
+                    return 1072;   // 2
+                } else if (f.getSlotBallState(0)) {
+                    selectedIndex = 0;
+                    return 370; //bien
+                }
+                return f.getPosition(); // no balls
 
-            return f.getPosition(); // no balls
-        }else if(numberOfBalls == 2){
-            if (f.getSlotBallState(1)) {
-                selectedIndex = 1;
-                return 1050;   // 2
-            } else if (f.getSlotBallState(0)) {
-                selectedIndex = 0;
-                return 1950; //bien
+            } else if (numberOfBalls == 2) {
+                if (f.getSlotBallState(1)) {
+                    selectedIndex = 1;
+                    return 1050;   // 2
+                } else if (f.getSlotBallState(0)) {
+                    selectedIndex = 0;
+                    return 1950; //bien
+                }
+            } else if (numberOfBalls == 1) {
+                return 1200;
             }
         }
-
-
-        else if(numberOfBalls == 1) {
-            return 1200;
-        }
-
         return 0;
     }
 

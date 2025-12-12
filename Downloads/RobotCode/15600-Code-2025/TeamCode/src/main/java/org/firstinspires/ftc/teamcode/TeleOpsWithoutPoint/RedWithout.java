@@ -1,12 +1,10 @@
-package org.firstinspires.ftc.teamcode.Robot.TeleOPs;
+package org.firstinspires.ftc.teamcode.TeleOpsWithoutPoint;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.RunCommand;
-import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
-import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
@@ -19,9 +17,9 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Torreta;
-
 @TeleOp
-public class RedTeleop extends CommandOpMode {
+public class RedWithout extends CommandOpMode {
+
     private MecanumDriveTrain m_driveTrain;
     private Intake m_intake;
 
@@ -33,12 +31,6 @@ public class RedTeleop extends CommandOpMode {
     @Override
     public void initialize() {
         m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, false);
-
-        com.pedropathing.geometry.Pose pose =
-                (com.pedropathing.geometry.Pose) blackboard.get("endPose");
-
-        m_driveTrain.getFollower().setPose(pose);
-        telemetry.addData("Pose restored", pose);
 
         m_shooter = new Shooter(hardwareMap, telemetry);
         m_feeder = new Feeder(hardwareMap,telemetry);

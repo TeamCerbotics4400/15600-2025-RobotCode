@@ -62,27 +62,27 @@ public class TorretaCommand extends CommandBase {
         double heading =  Math.toDegrees(m_drive.getPose().getHeading());
 
         double turretSetpoint = -(targetAngle - heading);
-        if (turretSetpoint > 75) turretSetpoint = 75;
-        if (turretSetpoint < -220) turretSetpoint = -220;
+        if (turretSetpoint > 90) turretSetpoint = 90;
+        if (turretSetpoint < -165) turretSetpoint = -165;
 
 
          m_turret.setTurretPosition(turretSetpoint);
-        telemetry.addData("Target Angle", targetAngle);
-        telemetry.addData("Heading Command",heading);
-        telemetry.addData("dx", dx);
-        telemetry.addData("dy", dy);
-        telemetry.addData("AngularVel", angularVelocity);
-        telemetry.addData("robot pose X", robotPose.getX());
-        telemetry.addData("robot pose Y", robotPose.getY());
+       // telemetry.addData("Target Angle", targetAngle);
+       // telemetry.addData("Heading Command",heading);
+    //    telemetry.addData("dx", dx);
+      //  telemetry.addData("dy", dy);
+       // telemetry.addData("AngularVel", angularVelocity);
+        //telemetry.addData("robot pose X", robotPose.getX());
+        //telemetry.addData("robot pose Y", robotPose.getY());
         telemetry.addData("Turret setPoint", turretSetpoint);
-        String pose = String.format(
-                Locale.US,
-                "X: %.3f, Y: %.3f, H: %.3f",
-                m_drive.getPose().getY(),
-                m_drive.getPose().getX(),
-                heading
-        );
-        telemetry.addData(getSubsystem(), pose);
+       // String pose = String.format(
+         //       Locale.US,
+           //     "X: %.3f, Y: %.3f, H: %.3f",
+             //   m_drive.getPose().getY(),
+               // m_drive.getPose().getX(),
+             //   heading
+        //);
+        //telemetry.addData(getSubsystem(), pose);
     }
 
     @Override

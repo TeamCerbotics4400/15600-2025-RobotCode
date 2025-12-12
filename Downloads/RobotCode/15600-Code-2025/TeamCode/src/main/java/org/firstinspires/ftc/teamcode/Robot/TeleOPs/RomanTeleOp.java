@@ -37,6 +37,13 @@ public class RomanTeleOp extends CommandOpMode {
     public void initialize() {
         m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, true);
 
+        com.pedropathing.geometry.Pose pose =
+                (com.pedropathing.geometry.Pose) blackboard.get("endPose");
+
+        m_driveTrain.getFollower().setPose(pose);
+        telemetry.addData("Pose restored", pose);
+
+
         m_shooter = new Shooter(hardwareMap, telemetry);
        m_feeder = new Feeder(hardwareMap,telemetry);
         m_torreta = new Torreta(hardwareMap, telemetry);
@@ -56,7 +63,7 @@ public class RomanTeleOp extends CommandOpMode {
 
 
 
-m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,new Pose2d(10,135,Math.toRadians(0))));
+m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,new Pose2d(7,144,Math.toRadians(0))));
 
         // --- INTAKE ---
         g1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
@@ -92,7 +99,7 @@ m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,
                         m_feeder,
                         telemetry,
                         false,
-                        1000
+                        1000,0
                 ))
                 .whenReleased(
                         new ParallelCommandGroup(
@@ -106,7 +113,7 @@ m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,
                         )
                 );
 
-        /*
+
 
         g1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
                 .whileHeld(new ParallelCommandGroup(
@@ -115,7 +122,7 @@ m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,
                         new RunCommand(() -> m_feeder.setCRSPower(0))));
 
 
-
+/*
         g1.getGamepadButton(GamepadKeys.Button.B)
                 .whileHeld(new ParallelCommandGroup(
                                 new RunCommand(
@@ -180,7 +187,7 @@ m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,
 
 
         g2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-                .whenPressed(new TorretaCommand(m_driveTrain,m_torreta,telemetry, new Pose2d(16,135, Math.toRadians(0))));
+                .whenPressed(new TorretaCommand(m_driveTrain,m_torreta,telemetry, new Pose2d(14,135, Math.toRadians(0))));
 
 
 /*

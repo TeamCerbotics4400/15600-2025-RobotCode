@@ -32,13 +32,12 @@ public class Feeder extends SubsystemBase {
     HardwareMap hardwareMap;
     Telemetry telemetry;
     TouchSensor limitSwitch;
+
     private enum SlotPosition{
         SLOT_1,
         SLOT_2,
         SLOT_3
     }
-
-
 
     public int globalSlotPosition = 0;
     public int globalTargetPosiion = 0;
@@ -46,11 +45,13 @@ public class Feeder extends SubsystemBase {
         SlotPosition slotNumber;
         boolean hasBallInside;
         int targetPosition;
+        int color;
 
         public SlotClass(SlotPosition slotNumber) {
             this.slotNumber = slotNumber;
             this.hasBallInside = false;
             this.targetPosition = 0;
+            this.color = 0;
         }
     }
 
@@ -65,12 +66,8 @@ public class Feeder extends SubsystemBase {
 
     public static double P = 0.002;
     public static double I = 0;
-
-
     public static double D= 0.000108;
     FtcDashboard dashboard;
-
-    private boolean Ballinside = false;
 
     public PIDController m_controller = new PIDController(P,I,D);
 
@@ -106,12 +103,6 @@ public class Feeder extends SubsystemBase {
         m_controller.setSetPoint(targetPositionTicks);
     }
 
-    public void setPosition(double power,int pos){
-        motorLavadora.setPower(power);
-        motorLavadora.setTargetPosition(pos);
-        motorLavadora.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
-
     public void setFalseNodeValue(int val){
         slots[val].hasBallInside = false;
     }
@@ -132,7 +123,6 @@ public class Feeder extends SubsystemBase {
     public boolean detectBall(ColorSensor sensor) {
         return sensor.alpha() > 70 && sensor.alpha() < 1200;
     }
-
 
     public void goToNextSlot(){
         if(globalSlotPosition == 0){
@@ -206,6 +196,7 @@ public class Feeder extends SubsystemBase {
                                 || (globalSlotPosition == 2 && detectBall(s2) && detectBall(s3))){
 
                     slots[globalSlotPosition].hasBallInside = true;
+                    slots[globalSlotPosition].color = detectColor(s1);
 
                     currentSlotIndex++;
                     if (currentSlotIndex >= 3) {
@@ -220,6 +211,14 @@ public class Feeder extends SubsystemBase {
         return slots[index].hasBallInside;
     }
 
+    public int getSlotColorState(int index) {
+        return slots[index].color;
+    }
+
+    public void setInitialColor(int index, int color){
+        slots[index].color = color;
+    }
+
     public void setAllfalse(){
         slots[0].hasBallInside = false;
         slots[1].hasBallInside = false;
@@ -231,32 +230,43 @@ public class Feeder extends SubsystemBase {
         slots[0].hasBallInside = true;
         slots[1].hasBallInside = true;
         slots[2].hasBallInside = true;
-
-
     }
+
+    public int sensor1Color(){
+        if(s1.green()> s1.blue()){
+            return 0;
+        }else{
+            return 1;
+        }
+    }
+    public int sensor2Color(){
+        if(s2.green()> s2.blue()){
+            return 0;
+        }else{
+            return 1;
+        }
+    }
+    public int sensor3Color(){
+        if(s3.green()> s3.blue()){
+            return 0;
+        }else{
+            return 1;
+        }
+    }
+
+
 
 
     @Override
     public void periodic() {
 
-        m_controller.setPID(P,I,D);
+       // m_controller.setPID(P,I,D);
 
         //Verde 0   Morado 1
 
         /*slots[0].hasBallInside = detectBall(s1);
         slots[1].hasBallInside = detectBall(s2);
         slots[2].hasBallInside = detectBall(s3);
-
-        telemetry.addData("S1 has ball", slots[0].hasBallInside);
-        telemetry.addData("S2 has ball", slots[1].hasBallInside);
-        telemetry.addData("S3 has ball", slots[2].hasBallInside);
-
-        telemetry.addData("S1 alpha", s1.alpha());
-        telemetry.addData("S3 alpha", s3.alpha());
-
-        telemetry.addData("S1 red", s1.red());
-        telemetry.addData("S1 blue", s2.blue());
-        telemetry.addData("S1 green", s3.green());
 
         telemetry.addData("S1 Color", detectColor(s1));
         telemetry.addData("S2 Color", detectColor(s2));
@@ -265,9 +275,6 @@ public class Feeder extends SubsystemBase {
         telemetry.addData("FeederPosition", getPosition());
         telemetry.addData("Intake active", isIntaking);
         //  telemetry.addData("Slot " + globalSlotPosition + " setpoint", slots[globalSlotPosition].targetPosition);
-
-
-
 
         telemetry.addData("S2 alpha", s2.alpha());
         telemetry.addData("S2 detected?", detectBall(s2));
@@ -278,21 +285,27 @@ public class Feeder extends SubsystemBase {
 
         motorLavadora.setPower(m_controller.calculate(getPosition()));
 
-        telemetry.addData("Debouncer", ballDebouncer.calculate(detectBall(s1)));
 
-        telemetry.addData("S1 hasballInside", slots[0].hasBallInside );
-        telemetry.addData("S2 hasballInside", slots[1].hasBallInside);
-        telemetry.addData("S3 hasballInside", slots[2].hasBallInside);
+        telemetry.addData("S1 color", sensor1Color());
+        telemetry.addData("S2 color", sensor2Color());
+        telemetry.addData("S3 color", sensor3Color());
+
+        telemetry.addData("S1 inside", getSlotColorState(0));
+        telemetry.addData("S2 inside", getSlotColorState(1));
+        telemetry.addData("S3 inside", getSlotColorState(2));
+
+        telemetry.addData("S1 state", getSlotBallState(0));
+        telemetry.addData("S2 state", getSlotBallState(1));
+        telemetry.addData("S3 state", getSlotBallState(2));
+
         telemetry.addData("S1 alpha", s1.alpha());
         telemetry.addData("Lavadora slot", globalSlotPosition);
-        telemetry.addData("Lavadora target", globalTargetPosiion);
+        telemetry.addData("Lavadora target", m_controller.getSetPoint());
         telemetry.addData("FeederPosition", getPosition());
-        telemetry.addData("Is Busy", motorLavadora.isBusy());
-        telemetry.addData("Limit switch presed", limitSwitchGotPressed());
 
         TelemetryPacket packet = new TelemetryPacket();
         packet.put("PID Output", m_controller.calculate(getPosition()));
-        packet.put("Graph degrees",getPosition() );
+        packet.put("Graph degrees",getPosition());
         packet.put("Graph setpoint", m_controller.getSetPoint());
 
         dashboard.sendTelemetryPacket(packet);

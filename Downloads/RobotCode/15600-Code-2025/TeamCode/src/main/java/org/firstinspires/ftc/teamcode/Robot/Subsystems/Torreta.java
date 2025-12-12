@@ -65,6 +65,7 @@ public class Torreta extends SubsystemBase {
         double gearRatio = 10.5;
         double ticksPerTurretRev = motorTicksPerRev * gearRatio;
         return ((ticks / ticksPerTurretRev) * 360);
+
     }
 
     @Override
@@ -75,12 +76,12 @@ public class Torreta extends SubsystemBase {
 
         double power = pidController.calculate(currentDegrees);
 
-        if ((currentDegrees <= -220 && power < 0) || (currentDegrees >= 75 && power > 0)) {
+        if ((currentDegrees <= -165 && power < 0) || (currentDegrees >= 90 && power > 0)) {
             power = 0;
         }
 //65   -196
         if(pidMode){
-        torreta.setPower(power);
+       // torreta.setPower(power);
         }
 
         // Telemetría
