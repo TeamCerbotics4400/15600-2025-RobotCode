@@ -19,8 +19,6 @@ import org.firstinspires.ftc.teamcode.utils.Debouncer;
 
 import java.util.function.BooleanSupplier;
 
-@Configurable
-@Config
 public class Feeder extends SubsystemBase {
 
 
@@ -32,6 +30,7 @@ public class Feeder extends SubsystemBase {
     HardwareMap hardwareMap;
     Telemetry telemetry;
     TouchSensor limitSwitch;
+    MecanumDriveTrain driveTrain;
 
     private enum SlotPosition{
         SLOT_1,
@@ -55,12 +54,13 @@ public class Feeder extends SubsystemBase {
         }
     }
 
-    private final SlotClass[] slots = new SlotClass[] {
+    public static final SlotClass[] slots = new SlotClass[] {
             new SlotClass(SlotPosition.SLOT_1),
             new SlotClass(SlotPosition.SLOT_2),
             new SlotClass(SlotPosition.SLOT_3)
     };
     public boolean isIntaking = false;
+    public boolean feederManual = false;
 
     private int currentSlotIndex = 0;
 
@@ -69,13 +69,17 @@ public class Feeder extends SubsystemBase {
     public static double D= 0.000108;
     FtcDashboard dashboard;
 
+    public double angularVel = 0;
+
+
     public PIDController m_controller = new PIDController(P,I,D);
 
     private Debouncer ballDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kRising);//0.35
-    public Feeder(HardwareMap hardwareMap, Telemetry telemetry){
+    public Feeder(HardwareMap hardwareMap, Telemetry telemetry, MecanumDriveTrain driveTrain){
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
         this.dashboard = FtcDashboard.getInstance();
+        this.driveTrain = driveTrain;
 
         limitSwitch = hardwareMap.get(TouchSensor.class, "limit");
 
@@ -108,7 +112,8 @@ public class Feeder extends SubsystemBase {
     }
 
     public void checkAndChangeIntakePosition(){
-        if(isIntaking && (!slots[0].hasBallInside ||!slots[1].hasBallInside||!slots[2].hasBallInside)){
+        if(isIntaking && (!slots[0].hasBallInside ||!slots[1].hasBallInside||!slots[2].hasBallInside) && angularVel < 1){
+            telemetry.log().add("reaches");
             if(atPosition(globalTargetPosiion,10)) {
                 if (slots[globalSlotPosition].hasBallInside) {
                     goToNextSlot();
@@ -158,6 +163,7 @@ public class Feeder extends SubsystemBase {
         ser2.setPower(power);
     }
 
+
     public int getPosition(){
         return motorLavadora.getCurrentPosition();
     }
@@ -186,6 +192,8 @@ public class Feeder extends SubsystemBase {
             return 1;
         }
     }
+
+
 
     private void updateSlotsUsingSensor() {// true = ball detected
         if (atPosition(globalTargetPosiion, 10) && !motorLavadora.isBusy()) {
@@ -232,6 +240,10 @@ public class Feeder extends SubsystemBase {
         slots[2].hasBallInside = true;
     }
 
+    public void setColorToNode(int index, int color){
+        slots[index].color = color;
+    }
+
     public int sensor1Color(){
         if(s1.green()> s1.blue()){
             return 0;
@@ -254,6 +266,10 @@ public class Feeder extends SubsystemBase {
         }
     }
 
+    public void setAngularVel(){
+        angularVel = driveTrain.getAngularVel();
+    }
+
 
 
 
@@ -273,7 +289,6 @@ public class Feeder extends SubsystemBase {
         telemetry.addData("S3 Color", detectColor(s3));
 
         telemetry.addData("FeederPosition", getPosition());
-        telemetry.addData("Intake active", isIntaking);
         //  telemetry.addData("Slot " + globalSlotPosition + " setpoint", slots[globalSlotPosition].targetPosition);
 
         telemetry.addData("S2 alpha", s2.alpha());
@@ -283,17 +298,19 @@ public class Feeder extends SubsystemBase {
         telemetry.addData("Distance", distanceSensor.getDistance(DistanceUnit.MM));
         */
 
-        motorLavadora.setPower(m_controller.calculate(getPosition()));
+        if(!feederManual) {
+            motorLavadora.setPower(m_controller.calculate(getPosition()));
+        }
 
 
-        telemetry.addData("S1 color", sensor1Color());
+        /*telemetry.addData("S1 color", sensor1Color());
         telemetry.addData("S2 color", sensor2Color());
         telemetry.addData("S3 color", sensor3Color());
 
         telemetry.addData("S1 inside", getSlotColorState(0));
         telemetry.addData("S2 inside", getSlotColorState(1));
         telemetry.addData("S3 inside", getSlotColorState(2));
-
+*/
         telemetry.addData("S1 state", getSlotBallState(0));
         telemetry.addData("S2 state", getSlotBallState(1));
         telemetry.addData("S3 state", getSlotBallState(2));
@@ -302,24 +319,32 @@ public class Feeder extends SubsystemBase {
         telemetry.addData("Lavadora slot", globalSlotPosition);
         telemetry.addData("Lavadora target", m_controller.getSetPoint());
         telemetry.addData("FeederPosition", getPosition());
+    //    telemetry.addData("PID Output", m_controller.calculate(getPosition()));
+      //  telemetry.addData("Intake active", isIntaking);
+       // telemetry.addData("Angular Vel", angularVel);
+
 
         TelemetryPacket packet = new TelemetryPacket();
         packet.put("PID Output", m_controller.calculate(getPosition()));
         packet.put("Graph degrees",getPosition());
         packet.put("Graph setpoint", m_controller.getSetPoint());
+        packet.put("Lavadora globalTarget", globalTargetPosiion);
+
 
         dashboard.sendTelemetryPacket(packet);
 
         checkAndChangeIntakePosition();
+        setAngularVel();
 
         if(limitSwitch.isPressed()) {
             resetEncoders();
         }
+        /*
         if(!slots[0].hasBallInside && !slots[1].hasBallInside && !slots[2].hasBallInside ){
             globalTargetPosiion = 0;
             globalSlotPosition = 0;
             goToPosition(1,0);
-        }
+        }*/
 
         if(isIntaking){
             updateSlotsUsingSensor();

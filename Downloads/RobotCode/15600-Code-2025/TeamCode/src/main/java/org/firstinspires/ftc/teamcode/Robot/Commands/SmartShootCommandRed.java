@@ -20,6 +20,7 @@ public class SmartShootCommandRed extends SequentialCommandGroup {
 
     public boolean Auto = false;
     private int targetRPMs = 0;
+    private int targetPositionTicks = 0;
     public SmartShootCommandRed(MecanumDriveTrain drive,
                                  Shooter shooter,
                                  Feeder feeder,
@@ -41,6 +42,11 @@ public class SmartShootCommandRed extends SequentialCommandGroup {
         }else{
             arraySequence = new int[]{0,0,0};
         }
+
+        feeder.setColorToNode(0,feeder.sensor3Color());
+        feeder.setColorToNode(1,feeder.sensor1Color());
+        feeder.setColorToNode(2,feeder.sensor2Color());
+
         addCommands(
 
                 new InstantCommand(()->numberOfBalls = getDetectedBallCount(feeder)),
@@ -65,14 +71,14 @@ public class SmartShootCommandRed extends SequentialCommandGroup {
 
                                         // Select next slot
                                         new InstantCommand(() -> {
-                                            feeder.globalTargetPosiion = findNextSlotToShoot(feeder);
+                                            targetPositionTicks = findNextSlotToShoot(feeder);
                                         }),
                                         // Move to slot
                                         new RunCommand(() ->
-                                                feeder.goToPosition(1, feeder.globalTargetPosiion)
+                                                feeder.goToPosition(1,targetPositionTicks)
 
                                         ).interruptOn(() ->
-                                                feeder.atPosition(feeder.globalTargetPosiion, 100)
+                                                feeder.atPosition(targetPositionTicks, 100)
                                                         &&
                                                         shooter.atRPMs(
                                                                 shooter.getInterpolatedShoot(
@@ -144,21 +150,22 @@ public class SmartShootCommandRed extends SequentialCommandGroup {
 
     // Fixed priority → slot 2 → 1 → 0
     private int findNextSlotToShoot(Feeder f) {
+        tl.log().add("" + targetPositionTicks);
         //-----------------Color----------------------
         if(Auto && numberOfBalls == 3 && (id == 21 || id == 22 || id == 23)) {
             tl.log().add(""+arraySequence[3-getDetectedBallCount(f)]);
-            if (f.getSlotBallState(2) && f.getSlotColorState(2) == arraySequence[3-getDetectedBallCount(f)]) {
-                tl.log().add("Index 2");
-                selectedIndex = 2;
-                return 1920;
-            } else if (f.getSlotBallState(1) && f.getSlotColorState(0) == arraySequence[3-getDetectedBallCount(f)]) {
-                tl.log().add("Index 1");
-                selectedIndex = 1;
-                return 1072;
-            } else if (f.getSlotBallState(0) && f.getSlotColorState(1) == arraySequence[3-getDetectedBallCount(f)]) {
+            if (f.getSlotBallState(0) && f.getSlotColorState(0) == arraySequence[3-getDetectedBallCount(f)]) {
                 tl.log().add("Index 0");
                 selectedIndex = 0;
                 return 370;
+            } else if (f.getSlotBallState(1) && f.getSlotColorState(1) == arraySequence[3-getDetectedBallCount(f)]) {
+                tl.log().add("Index 1");
+                selectedIndex = 1;
+                return 1072;
+            } else if (f.getSlotBallState(2) && f.getSlotColorState(2) == arraySequence[3-getDetectedBallCount(f)]) {
+                tl.log().add("Index 2");
+                selectedIndex = 2;
+                return 1920;
             }
         } else {
             //-----------------not Color----------------------
@@ -189,7 +196,7 @@ public class SmartShootCommandRed extends SequentialCommandGroup {
                 return 1200;
             }
         }
-        return 0;
+        return 0; //no
     }
 
     @Override

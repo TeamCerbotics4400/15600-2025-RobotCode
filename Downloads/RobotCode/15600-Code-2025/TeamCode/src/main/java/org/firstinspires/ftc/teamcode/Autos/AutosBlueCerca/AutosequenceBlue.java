@@ -38,7 +38,9 @@ public AutosequenceBlue(MecanumDriveTrain m_drive, Shooter m_shooter, Intake m_i
 
     addCommands(
 new ParallelCommandGroup(
-        new TorretaCommand(m_drive,m_torreta,tl, new Pose2d(7,144,Math.toRadians(0))),
+        new InstantCommand(m_intake::resetTicks),
+        new TorretaCommand(m_drive,m_torreta,tl, new Pose2d(9,144,Math.toRadians(0))),
+
 
 
 new SequentialCommandGroup(

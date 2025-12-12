@@ -59,16 +59,17 @@ public class TorretaCommand extends CommandBase {
 
         targetAngle = Math.toDegrees(Math.atan2(dy, dx));
 
-        double heading =  Math.toDegrees(m_drive.getPose().getHeading());
+        double heading =  normalizedAngle(Math.toDegrees(m_drive.getPose().getHeading()));
 
         double turretSetpoint = -(targetAngle - heading);
+
         if (turretSetpoint > 90) turretSetpoint = 90;
-        if (turretSetpoint < -165) turretSetpoint = -165;
+        if (turretSetpoint < -100) turretSetpoint = -100;
 
 
          m_turret.setTurretPosition(turretSetpoint);
-       // telemetry.addData("Target Angle", targetAngle);
-       // telemetry.addData("Heading Command",heading);
+        telemetry.addData("Target Angle", targetAngle);
+        telemetry.addData("Heading Command",heading);
     //    telemetry.addData("dx", dx);
       //  telemetry.addData("dy", dy);
        // telemetry.addData("AngularVel", angularVelocity);

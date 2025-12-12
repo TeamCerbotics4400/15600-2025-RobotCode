@@ -14,6 +14,7 @@ import com.seattlesolvers.solverslib.geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.SmartShootCommandRed;
 import org.firstinspires.ftc.teamcode.Robot.Commands.TorretaCommand;
+import org.firstinspires.ftc.teamcode.Robot.Constants;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
@@ -41,7 +42,7 @@ public class RedTeleop extends CommandOpMode {
         telemetry.addData("Pose restored", pose);
 
         m_shooter = new Shooter(hardwareMap, telemetry);
-        m_feeder = new Feeder(hardwareMap,telemetry);
+        m_feeder = new Feeder(hardwareMap,telemetry, m_driveTrain);
         m_torreta = new Torreta(hardwareMap, telemetry);
         m_intake = new Intake(hardwareMap, telemetry);
 
@@ -59,7 +60,7 @@ public class RedTeleop extends CommandOpMode {
                 g1::getRightX,
                 false));
 
-        m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,new Pose2d(140,144,Math.toRadians(0))));
+        m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,new Pose2d(Constants.TurretCons.Redx,Constants.TurretCons.Redy,Math.toRadians(0))));
 
 
         // --- INTAKE ---
@@ -67,7 +68,8 @@ public class RedTeleop extends CommandOpMode {
                 .whileHeld(
                         new ParallelCommandGroup(
                                 new InstantCommand(()-> m_intake.setPower(1)),
-                                new InstantCommand(()-> m_feeder.isIntaking = true)
+                                new InstantCommand(()-> m_feeder.isIntaking = true),
+                                new InstantCommand(()-> m_feeder.feederManual = false)
                         ))
                 .whenReleased(
                         new ParallelCommandGroup(
@@ -115,20 +117,56 @@ public class RedTeleop extends CommandOpMode {
                                 new InstantCommand(()->m_feeder.globalTargetPosiion = 0),
                                 new InstantCommand(()->m_feeder.setAllfalse()),
                                 //    new RunCommand(()->m_feeder.goToPosition(0.1,-20)).interruptOn(()->m_feeder.limitSwitchGotPressed()),
-                                new InstantCommand(()->m_feeder.goToPosition(0,0)),
-                                new InstantCommand(()-> telemetry.log().add("It did reset"))
-                        )
+                                new InstantCommand(()->m_feeder.goToPosition(0,0)))
                 );
 
-        g1.getGamepadButton(GamepadKeys.Button.A)
+        g2.getGamepadButton(GamepadKeys.Button.X)
                 .whileHeld(new ParallelCommandGroup(
-                        new RunCommand(()->m_shooter.goToTargetRPM()),
+                        new RunCommand(()->m_shooter.setRPM((int)m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(false)))),
                         new RunCommand(()-> m_feeder.setCRSPower(1))
                 ))
                 .whenReleased(new ParallelCommandGroup(
                         new RunCommand(()->m_shooter.setRPM(0)),
                         new RunCommand(()-> m_feeder.setCRSPower(0))
                 ));
+
+        g2.getGamepadButton(GamepadKeys.Button.B)
+                .whileHeld(new ParallelCommandGroup(
+                        new InstantCommand(()->m_feeder.setManualPower(-0.4)),
+                        new InstantCommand(()-> m_feeder.feederManual = true)))
+                .whenReleased(new ParallelCommandGroup(
+                        new InstantCommand(()->m_feeder.setManualPower(0))));
+
+        g2.getGamepadButton(GamepadKeys.Button.A)
+                .whileHeld(new ParallelCommandGroup(
+                        new InstantCommand(()->m_feeder.setManualPower(0.4)),
+                        new InstantCommand(()-> m_feeder.feederManual = true)))
+                .whenReleased(new ParallelCommandGroup(
+                        new InstantCommand(()->m_feeder.setManualPower(0))));
+
+        g1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whileHeld(
+                        new ParallelCommandGroup(
+                                new InstantCommand(()-> m_intake.setPower(1)),
+                                new InstantCommand(()-> m_feeder.isIntaking = true),
+                                new InstantCommand(()-> m_feeder.feederManual = false)
+                        ))
+                .whenReleased(
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> m_intake.setPower(0)),
+                                new InstantCommand(()->m_feeder.isIntaking = false)
+                        ));
+
+        g1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+                .whileHeld(
+                        new ParallelCommandGroup(
+                                new InstantCommand(()-> m_intake.setPower(-1))
+
+                        ))
+                .whenReleased(
+                        new ParallelCommandGroup(
+                                new InstantCommand(() -> m_intake.setPower(0))
+                        ));
 /*
         g1.getGamepadButton(GamepadKeys.Button.B)
                 .whileHeld(new ParallelCommandGroup(

@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.PathCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.SmartShootCommandBLue;
 import org.firstinspires.ftc.teamcode.Robot.Commands.SmartShootCommandRed;
 import org.firstinspires.ftc.teamcode.Robot.Commands.TorretaCommand;
+import org.firstinspires.ftc.teamcode.Robot.Constants;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
@@ -41,8 +42,9 @@ public class AutoSequenceRed extends SequentialCommandGroup {
         addCommands(
 
                 new ParallelCommandGroup(
-                        new TorretaCommand(m_drive,m_torreta,tl, new Pose2d(140
-                                ,144,Math.toRadians(0))),
+                        new InstantCommand(m_intake::resetTicks),
+                        new TorretaCommand(m_drive,m_torreta,tl, new Pose2d(Constants.TurretCons.Redx
+                                ,Constants.TurretCons.Redy,Math.toRadians(0))),
 
 
                         new SequentialCommandGroup(
@@ -54,8 +56,8 @@ public class AutoSequenceRed extends SequentialCommandGroup {
                                 new PathCommand(m_drive, PathsRed.Shoot1),//Posicion disparo
 
 
-                                new WaitCommand(300),
-                                new SmartShootCommandRed(m_drive, m_shooter, m_feeder, tl,true,3050, tagDetection.id),
+                            //    new WaitCommand(300),
+                                new SmartShootCommandRed(m_drive, m_shooter, m_feeder, tl,true,2900, tagDetection.id),
 
                                 new ParallelCommandGroup(
 
@@ -82,7 +84,7 @@ public class AutoSequenceRed extends SequentialCommandGroup {
                                 new PathCommand(m_drive, PathsRed.Shoot2),//Posicion disparo
                                 new WaitCommand(200),
                                 new InstantCommand(()-> m_intake.setPower(0)),
-                                new SmartShootCommandBLue(m_drive, m_shooter, m_feeder, tl,true, 3050, tagDetection.id),//Dispara segunda ronda
+                                new SmartShootCommandBLue(m_drive, m_shooter, m_feeder, tl,true, 3000, tagDetection.id),//Dispara segunda ronda
                                 new WaitCommand(500),
                                 new PathCommand(m_drive, PathsRed.Final)
 

@@ -33,9 +33,13 @@ public class Intake extends SubsystemBase {
         intake.setPower(power);
     }
 
+    public void resetTicks(){
+        intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
     @Override
     public void periodic(){
-        tl.addData("Intake Voltage", intake.getCurrent(CurrentUnit.MILLIAMPS));
+    //    tl.addData("Intake Voltage", intake.getCurrent(CurrentUnit.MILLIAMPS));
         //0.7 aggara o mas
         //0l.
 

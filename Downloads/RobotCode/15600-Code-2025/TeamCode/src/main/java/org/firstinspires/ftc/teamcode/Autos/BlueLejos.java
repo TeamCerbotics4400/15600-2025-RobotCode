@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Torreta;
 
-@Autonomous
+
 public class BlueLejos extends CommandOpMode {
 
     MecanumDriveTrain m_drive;
@@ -24,7 +24,7 @@ public class BlueLejos extends CommandOpMode {
         Shooter m_shooter = new Shooter(hardwareMap, telemetry);
         Intake m_intake = new Intake(hardwareMap, telemetry);
         Torreta m_torreta = new Torreta(hardwareMap, telemetry);
-        Feeder m_feeder = new Feeder(hardwareMap, telemetry);
+        Feeder m_feeder = new Feeder(hardwareMap, telemetry, m_drive);
         register(m_drive, m_shooter, m_torreta, m_intake, m_feeder);
         Follower follower = m_drive.getFollower();
         new PathsBlue(follower);

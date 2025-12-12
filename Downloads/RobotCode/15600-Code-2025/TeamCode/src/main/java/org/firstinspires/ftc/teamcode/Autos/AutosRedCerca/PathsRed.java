@@ -20,6 +20,7 @@ public class PathsRed {
                 .addPath(
                         new BezierLine(new Pose(80.000, 8.000), new Pose(82.554, 80.355))
                 )
+                .setVelocityConstraint(10)
                 .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90))
                 .build();
 
@@ -29,7 +30,7 @@ public class PathsRed {
                         new BezierCurve(
                                 new Pose(82.554, 80.355),
                                 new Pose(74.111, 23.218),
-                                new Pose(100.000, 34.945)
+                                new Pose(95, 34.945)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
@@ -38,7 +39,7 @@ public class PathsRed {
         Intake1 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(100.000, 34.945), new Pose(130.000, 34.000))
+                        new BezierLine(new Pose(95, 34.945), new Pose(130.000, 34.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
                 .build();

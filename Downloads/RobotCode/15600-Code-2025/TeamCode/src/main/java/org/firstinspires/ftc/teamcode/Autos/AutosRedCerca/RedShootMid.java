@@ -28,7 +28,7 @@ public class RedShootMid extends CommandOpMode {
         Shooter m_shooter = new Shooter(hardwareMap, telemetry);
         Intake m_intake = new Intake(hardwareMap, telemetry);
         Torreta m_torreta = new Torreta(hardwareMap, telemetry);
-        Feeder m_feeder = new Feeder(hardwareMap, telemetry);
+        Feeder m_feeder = new Feeder(hardwareMap, telemetry, m_drive);
         register(m_drive, m_shooter, m_torreta, m_intake, m_feeder);
         Follower follower = m_drive.getFollower();
         new PathsRed(follower);

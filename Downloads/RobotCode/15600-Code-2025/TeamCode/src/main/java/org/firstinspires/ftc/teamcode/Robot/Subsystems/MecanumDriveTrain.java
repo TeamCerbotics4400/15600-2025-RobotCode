@@ -58,6 +58,12 @@ public class MecanumDriveTrain extends SubsystemBase {
         }
 
         return distancia;
+
+
+    }
+
+    public double getAngularVel(){
+        return Math.abs(m_follower.getAngularVelocity());
     }
 
 

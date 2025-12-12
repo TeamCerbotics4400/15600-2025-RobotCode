@@ -45,7 +45,7 @@ public class RomanTeleOp extends CommandOpMode {
 
 
         m_shooter = new Shooter(hardwareMap, telemetry);
-       m_feeder = new Feeder(hardwareMap,telemetry);
+       m_feeder = new Feeder(hardwareMap,telemetry, m_driveTrain);
         m_torreta = new Torreta(hardwareMap, telemetry);
         m_intake = new Intake(hardwareMap, telemetry);
 
@@ -63,7 +63,7 @@ public class RomanTeleOp extends CommandOpMode {
 
 
 
-m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,new Pose2d(7,144,Math.toRadians(0))));
+m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,new Pose2d(9,140,Math.toRadians(0))));
 
         // --- INTAKE ---
         g1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
@@ -190,25 +190,33 @@ m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,
                 .whenPressed(new TorretaCommand(m_driveTrain,m_torreta,telemetry, new Pose2d(14,135, Math.toRadians(0))));
 
 
-/*
+
         g2.getGamepadButton(GamepadKeys.Button.Y)
                 .whileHeld(()->m_feeder.goToPosition(0.3,2170))
                 .whenReleased(()->m_feeder.setManualPower(0));
 
         g2.getGamepadButton(GamepadKeys.Button.X)
-                .whileHeld(()-> m_shooter.setRPM(2500))
+                .whileHeld(()-> m_shooter.setRPM((int)m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(false))))
                 .whenReleased(()-> m_shooter.setRPM(0));
 
         g2.getGamepadButton(GamepadKeys.Button.B)
-                .whileHeld(()->m_feeder.setManualPower(-0.4))
-                .whenReleased(()->m_feeder.setManualPower(0));
+                .whileHeld(new ParallelCommandGroup(
+                        new InstantCommand(()->m_feeder.setManualPower(-0.4)),
+                        new InstantCommand(()-> m_feeder.feederManual = true)))
+                .whenReleased(new ParallelCommandGroup(
+                        new InstantCommand(()->m_feeder.setManualPower(0)),
+                        new InstantCommand(()-> m_feeder.feederManual = true)));
 
         g2.getGamepadButton(GamepadKeys.Button.A)
-                        .whileHeld(()->m_feeder.setManualPower(0.4))
-                                .whenReleased(()->m_feeder.setManualPower(0));
+                        .whileHeld(new ParallelCommandGroup(
+                                new InstantCommand(()->m_feeder.setManualPower(0.4)),
+                                new InstantCommand(()-> m_feeder.feederManual = true)))
+                                .whenReleased(new ParallelCommandGroup(
+                                        new InstantCommand(()->m_feeder.setManualPower(0)),
+                                        new InstantCommand(()-> m_feeder.feederManual = true)));
 
 
-        g1.getGamepadButton(GamepadKeys.Button.A)
+        /*g1.getGamepadButton(GamepadKeys.Button.A)
                 .whileHeld(new ParallelCommandGroup(new RunCommand(()-> m_shooter.goToTargetRPM()),
                         new SequentialCommandGroup(
                         new WaitCommand(3000).interruptOn(()-> m_shooter.atRPMs(m_shooter.getRPMsDash(), 50)),
@@ -220,12 +228,13 @@ m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,
                         new InstantCommand(()-> m_shooter.setRPM(0)),
                         new InstantCommand(()-> m_feeder.setCRSPower(0))
                 ));
-
-//378   1108   1810
 */
+//378   1108   1810
+
         // Telemetría
         schedule(new RunCommand(() -> {
             telemetry.update();
+            m_feeder.angularVel = m_driveTrain.getAngularVel();
             telemetry.addData("Shooter Interpolaton RPMs", m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(true)));
         }));
     }

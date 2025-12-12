@@ -27,6 +27,7 @@ public class SmartShootCommandBLue extends SequentialCommandGroup {
 
     public boolean Auto = false;
     private int targetRPMs = 0;
+    private int targetPositionTicks = 0;
     public SmartShootCommandBLue(MecanumDriveTrain drive,
                                 Shooter shooter,
                                 Feeder feeder,
@@ -72,11 +73,11 @@ public class SmartShootCommandBLue extends SequentialCommandGroup {
 
                                         // Select next slot
                                         new InstantCommand(() -> {
-                                            feeder.globalTargetPosiion = findNextSlotToShoot(feeder);
+                                            targetPositionTicks = findNextSlotToShoot(feeder);
                                         }),
                                         // Move to slot
                                         new RunCommand(() ->
-                                                feeder.goToPosition(1, feeder.globalTargetPosiion)
+                                                feeder.goToPosition(1, targetPositionTicks)
 
                                         ).interruptOn(() ->
                                                 feeder.atPosition(feeder.globalTargetPosiion, 100)
@@ -118,7 +119,7 @@ public class SmartShootCommandBLue extends SequentialCommandGroup {
                 new InstantCommand(() -> {
                     shooter.setRPM(0);
                     feeder.setCRSPower(0);
-                    feeder.globalTargetPosiion = 0;
+                    feeder.globalTargetPosiion = 100;
                     feeder.resetAfterShoot();
                 })
         );

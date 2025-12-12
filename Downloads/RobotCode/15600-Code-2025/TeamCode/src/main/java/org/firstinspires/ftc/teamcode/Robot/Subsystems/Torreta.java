@@ -76,19 +76,20 @@ public class Torreta extends SubsystemBase {
 
         double power = pidController.calculate(currentDegrees);
 
-        if ((currentDegrees <= -165 && power < 0) || (currentDegrees >= 90 && power > 0)) {
+        if ((currentDegrees <= -100 && power < 0) || (currentDegrees >= 90
+                && power > 0)) {
             power = 0;
         }
 //65   -196
         if(pidMode){
-       // torreta.setPower(power);
+        torreta.setPower(power);
         }
 
         // Telemetría
         //elemetry.addData("Torreta Posicion", intake.getCurrentPosition());
         telemetry.addData("Torreta grados", currentDegrees);
-        //telemetry.addData("Torreta setpoint", pidController.getSetPoint());
-        telemetry.addData("PID output", power);
+       // telemetry.addData("Torreta setpoint", pidController.getSetPoint());
+     //   telemetry.addData("PID output", power);
         //telemetry.addData("Error extention", pidController.getPositionError());
         //telemetry.addData("I value", pidController.getI());
 /*

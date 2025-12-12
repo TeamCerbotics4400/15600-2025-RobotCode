@@ -33,7 +33,7 @@ public class Shooter extends SubsystemBase {
         kDistanceToShooterSpeed.put(new InterpolatingDouble(128.93), new InterpolatingDouble(3650.0));
         /*Medio*/
         kDistanceToShooterSpeed.put(new InterpolatingDouble(85.91), new InterpolatingDouble(3150.0));
-        kDistanceToShooterSpeed.put(new InterpolatingDouble(74.369), new InterpolatingDouble(3000.0));
+        kDistanceToShooterSpeed.put(new InterpolatingDouble(79.369), new InterpolatingDouble(3000.0));
 
         /*Cerca*/
         kDistanceToShooterSpeed.put(new InterpolatingDouble(63+offset), new InterpolatingDouble(2900.0));

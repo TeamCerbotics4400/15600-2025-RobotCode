@@ -36,7 +36,7 @@ public class BlueWithout extends CommandOpMode {
         m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, true);
 
         m_shooter = new Shooter(hardwareMap, telemetry);
-        m_feeder = new Feeder(hardwareMap,telemetry);
+        m_feeder = new Feeder(hardwareMap,telemetry,m_driveTrain);
         m_torreta = new Torreta(hardwareMap, telemetry);
         m_intake = new Intake(hardwareMap, telemetry);
 

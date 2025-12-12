@@ -33,7 +33,7 @@ public class RedWithout extends CommandOpMode {
         m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, false);
 
         m_shooter = new Shooter(hardwareMap, telemetry);
-        m_feeder = new Feeder(hardwareMap,telemetry);
+        m_feeder = new Feeder(hardwareMap,telemetry,m_driveTrain);
         m_torreta = new Torreta(hardwareMap, telemetry);
         m_intake = new Intake(hardwareMap, telemetry);
 

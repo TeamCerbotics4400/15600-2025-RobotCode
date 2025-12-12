@@ -18,6 +18,16 @@ public class Constants {
 
 
 
+    public static  class TurretCons{
+        public  static double Redx = 140.5;
+        public static double Redy = 140;
+
+        public static double Bluex = 9;
+        public static double BlueY = 140;
+
+    }
+
+
     public static FollowerConstants followerConstants = new FollowerConstants()
 
             .mass(15)
