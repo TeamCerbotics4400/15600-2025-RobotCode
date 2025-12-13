@@ -37,8 +37,7 @@ public AutosequenceBlue(MecanumDriveTrain m_drive, Shooter m_shooter, Intake m_i
     addCommands(
 
             new ParallelCommandGroup(
-
-                    new TorretaCommand(m_drive,m_torreta,tl, new Pose2d(9,144,Math.toRadians(0))),
+                    new TorretaCommand(m_drive,m_torreta,tl, new Pose2d(13,144,Math.toRadians(0))),
 
                     new SequentialCommandGroup(
 
@@ -47,7 +46,7 @@ public AutosequenceBlue(MecanumDriveTrain m_drive, Shooter m_shooter, Intake m_i
 
 
                             new WaitCommand(300),
-                            new SmartShootCommandBLue(m_drive, m_shooter, m_feeder, tl,true,3050),
+                            new SmartShootCommandBLue(m_drive, m_shooter, m_feeder, tl,true,3075),
 
                             new ParallelCommandGroup(
 
@@ -65,6 +64,7 @@ public AutosequenceBlue(MecanumDriveTrain m_drive, Shooter m_shooter, Intake m_i
 
                             new WaitCommand(500),
 
+                            new InstantCommand(m_feeder::AllTrue),
                             new PathCommand(m_drive, PathsBlue.Shoot2),//Posicion disparo
                             new WaitCommand(200),
                             new InstantCommand(()-> m_intake.setPower(0)),

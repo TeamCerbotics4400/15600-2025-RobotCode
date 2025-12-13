@@ -15,8 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.utils.InterpolatingDouble;
 import org.firstinspires.ftc.teamcode.utils.InterpolatingTreeMap;
 
-@Configurable
-@Config
+
 
 public class Shooter extends SubsystemBase {
 

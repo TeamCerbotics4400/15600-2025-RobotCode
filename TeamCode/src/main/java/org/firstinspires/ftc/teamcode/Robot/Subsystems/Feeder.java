@@ -19,8 +19,7 @@ import org.firstinspires.ftc.teamcode.utils.Debouncer;
 
 import java.util.function.BooleanSupplier;
 
-@Configurable
-@Config
+
 public class Feeder extends SubsystemBase {
 
 
@@ -63,16 +62,19 @@ public class Feeder extends SubsystemBase {
 
     private int currentSlotIndex = 0;
 
-    public static double P = 0.002;
+    public static double P = 0.002;//0.002
     public static double I = 0;
-    public static double D= 0.000108;
+    public static double D= 0.000108;//0.000108
     FtcDashboard dashboard;
 
     private boolean Ballinside = false;
 
+    public boolean Manual = false;
+
     public PIDController m_controller = new PIDController(P,I,D);
 
     private Debouncer ballDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kRising);//0.35
+
     public Feeder(HardwareMap hardwareMap, Telemetry telemetry){
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
@@ -128,7 +130,7 @@ public class Feeder extends SubsystemBase {
     }
 
     public boolean detectBall(ColorSensor sensor) {
-        return sensor.alpha() > 70 && sensor.alpha() < 1200;
+        return sensor.alpha() > 120 && sensor.alpha() < 1200;
     }
 
 
@@ -151,10 +153,19 @@ public class Feeder extends SubsystemBase {
         }
     }
 
+
+    public void setPosition(int pos){
+        motorLavadora.setPower(.8);
+        motorLavadora.setTargetPosition(pos);
+        motorLavadora.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorLavadora.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
     public void resetEncoders(){
-        //  motorLavadora.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+          motorLavadora.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLavadora.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+
 
     public void setManualPower(double power){  //For debuging only
         motorLavadora.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -274,7 +285,11 @@ public class Feeder extends SubsystemBase {
         telemetry.addData("Distance", distanceSensor.getDistance(DistanceUnit.MM));
         */
 
-        motorLavadora.setPower(m_controller.calculate(getPosition()));
+        if (!Manual){
+            motorLavadora.setPower(m_controller.calculate(getPosition()));
+        }
+
+      //  motorLavadora.setPower(m_controller.calculate(getPosition()));
 
         telemetry.addData("Debouncer", ballDebouncer.calculate(detectBall(s1)));
 

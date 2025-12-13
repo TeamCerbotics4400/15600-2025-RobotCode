@@ -42,47 +42,46 @@ public class    AutoSequenceRed extends SequentialCommandGroup {
                 new ParallelCommandGroup(
 
 
+                        new TorretaCommand(m_drive,m_torreta,tl, new Pose2d(135, 135,Math.toRadians(0))),
 
-                        new TorretaCommand(m_drive,m_torreta,tl, new Pose2d(130,130, Math.toRadians(0))),
 
-                new SequentialCommandGroup(
-                        new InstantCommand(m_feeder::AllTrue),
-                        new ParallelCommandGroup(
-                                new PathCommand(m_drive, PathsRed.Shoot1),
-                                new SmartShootCommandRed(m_drive, m_shooter, m_feeder, tl, true, 3550)//Disapara la primera ronda
-                        ),
-                        new PathCommand(m_drive, PathsRed.GoToSpike1),
+                        new SequentialCommandGroup(
 
-                       new ParallelCommandGroup(
-                                new InstantCommand(()-> m_intake.setPower(1)),
-                                new InstantCommand(()-> m_feeder.isIntaking = true),//agarra las pelotas
-                                new PathCommand(m_drive, PathsRed.Intake1)
-                        ),
-                        new WaitCommand(500),
-                        new InstantCommand(()-> m_intake.setPower(0)),
-                                new PathCommand(m_drive, PathsRed.Shoot2),
+                                new InstantCommand(m_feeder::AllTrue),
+                                new PathCommand(m_drive, PathsRed.Shoot1),//Posicion disparo
+
+
+                                //    new WaitCommand(300),
+                                new SmartShootCommandRed(m_drive, m_shooter, m_feeder, tl,true,2900),
+
+                                new ParallelCommandGroup(
+
+                                        new InstantCommand(()-> m_intake.setPower(1)),
+                                        new PathCommand(m_drive, PathsRed.GoToSpike1)
+                                ),
+
+
+                                new ParallelCommandGroup(
+
+                                        new InstantCommand(()-> m_intake.setPower(1)),
+                                        new InstantCommand(()-> m_feeder.isIntaking = true),//agarra las pelotas
+                                        new PathCommand(m_drive, PathsRed.Intake1)
+                                ),
                                 new WaitCommand(500),
-                                new SmartShootCommandRed(m_drive, m_shooter, m_feeder, tl, true, 3550)
 
-                             /*   new PathCommand(m_drive, PathsRed.GoToSpike2),
-
-
-                        new ParallelCommandGroup(
-                                new InstantCommand(()-> m_intake.setPower(1)),
-                                new InstantCommand(()-> m_feeder.isIntaking = true),//Agarra las ultimas pelotas
-                                new PathCommand(m_drive, PathsRed.Intake2)
-                        ),
-
-                                new PathCommand(m_drive, PathsRed.Shoot3),//Ultima posicion de disparo
-                                new SmartShootCommandRed(m_drive, m_shooter, m_feeder, tl)
-
-                     //   new PathCommand(m_drive, PathsRed.Final)
-*/
+                                new InstantCommand(m_feeder::AllTrue),
 
 
-                )
-                        )
+                                new WaitCommand(500),
+                                new PathCommand(m_drive, PathsRed.Shoot2),//Posicion disparo
+                                new WaitCommand(200),
+                                new InstantCommand(()-> m_intake.setPower(0)),
+                                new SmartShootCommandRed(m_drive, m_shooter, m_feeder, tl,true, 3000),//Dispara segunda ronda
+                                new WaitCommand(500),
+                                new PathCommand(m_drive, PathsRed.Final)
 
+
+                        ))
         );
 
     }

@@ -12,8 +12,7 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDController;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-@Configurable
-@Config
+
 public class Torreta extends SubsystemBase {
 
     CRServo torreta;

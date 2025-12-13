@@ -37,7 +37,7 @@ public class PathsBlue {
         Intake1 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(40.467, 37), new Pose(15.000, 37.000))
+                        new BezierLine(new Pose(40.467, 37), new Pose(12.500, 37.000))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
                 .build();

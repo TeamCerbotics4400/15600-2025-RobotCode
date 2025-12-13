@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Autos.AutosBlue;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.RunCommand;
 
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Intake;
@@ -24,6 +26,21 @@ public class Blue extends CommandOpMode {
         Follower follower = m_drive.getFollower();
         new PathsBlue(follower);
         blue = new AutosequenceBlue(m_drive, m_shooter, m_intake, m_torreta, m_feeder, telemetry);
-        schedule(blue);
+
+
+
+        schedule(new ParallelCommandGroup(blue), new RunCommand(() -> {
+            blackboard.put("endPose", follower.getPose());
+            blackboard.put("torretaPosition", m_torreta.ticksToDegrees());
+        }
+
+        ));
+
+        schedule( new RunCommand(()->{
+            telemetry.update();
+            com.pedropathing.geometry.Pose pose =
+                    (com.pedropathing.geometry.Pose) blackboard.get("endPose");
+            telemetry.addData("Blackboard Y", pose.getY());
+        }));
     }
 }

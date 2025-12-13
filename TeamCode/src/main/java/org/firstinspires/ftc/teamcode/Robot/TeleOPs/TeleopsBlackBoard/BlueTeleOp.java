@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Robot.TeleOPs;
+package org.firstinspires.ftc.teamcode.Robot.TeleOPs.TeleopsBlackBoard;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
@@ -13,7 +13,6 @@ import com.seattlesolvers.solverslib.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.Robot.Commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.SmartShootCommandBLue;
-import org.firstinspires.ftc.teamcode.Robot.Commands.SmartShootCommandRed;
 import org.firstinspires.ftc.teamcode.Robot.Commands.TorretaCommand;
 
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Feeder;
@@ -22,8 +21,8 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Torreta;
 
-@TeleOp(name = " BlueTeleop")
-public class RomanTeleOp extends CommandOpMode {
+@TeleOp(name = " BlueTeleop", group = "BleackBoard")
+public class BlueTeleOp extends CommandOpMode {
 
     private MecanumDriveTrain m_driveTrain;
     private Intake m_intake;
@@ -36,6 +35,12 @@ public class RomanTeleOp extends CommandOpMode {
     @Override
     public void initialize() {
         m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, true);
+
+        com.pedropathing.geometry.Pose pose =
+                (com.pedropathing.geometry.Pose) blackboard.get("endPose");
+
+        m_driveTrain.getFollower().setPose(pose);
+        telemetry.addData("Pose restored", pose);
 
         m_shooter = new Shooter(hardwareMap, telemetry);
        m_feeder = new Feeder(hardwareMap,telemetry);
@@ -56,7 +61,7 @@ public class RomanTeleOp extends CommandOpMode {
 
 
 
-m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,new Pose2d(10,135,Math.toRadians(0))));
+m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,new Pose2d(13,135,Math.toRadians(0))));
 
         // --- INTAKE ---
         g1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
@@ -106,7 +111,6 @@ m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,
                         )
                 );
 
-        /*
 
         g1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
                 .whileHeld(new ParallelCommandGroup(
@@ -114,23 +118,13 @@ m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,
                 .whenReleased(new ParallelCommandGroup(
                         new RunCommand(() -> m_feeder.setCRSPower(0))));
 
-
-
-        g1.getGamepadButton(GamepadKeys.Button.B)
+        g2.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whileHeld(new ParallelCommandGroup(
-                                new RunCommand(
-                                        () -> m_shooter.setRPM
-                                                ((int)m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(true)))),
-                        new SequentialCommandGroup(
-                                new WaitCommand(3000).interruptOn(()-> m_shooter.atRPMs(m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(true)), 30)),
-                                new RunCommand(()->m_feeder.setCRSPower(1))
-                        )
-                                )
-                )
-
+                        new RunCommand(() -> m_feeder.setCRSPower(1))))
                 .whenReleased(new ParallelCommandGroup(
-                        new RunCommand(()-> m_feeder.setCRSPower(0)),
-                        new RunCommand(() -> m_shooter.setPower(0))));
+                        new RunCommand(() -> m_feeder.setCRSPower(0))));
+
+
 
         /*Driver 2*/
 
@@ -182,40 +176,6 @@ m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,
         g2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
                 .whenPressed(new TorretaCommand(m_driveTrain,m_torreta,telemetry, new Pose2d(16,135, Math.toRadians(0))));
 
-
-/*
-        g2.getGamepadButton(GamepadKeys.Button.Y)
-                .whileHeld(()->m_feeder.goToPosition(0.3,2170))
-                .whenReleased(()->m_feeder.setManualPower(0));
-
-        g2.getGamepadButton(GamepadKeys.Button.X)
-                .whileHeld(()-> m_shooter.setRPM(2500))
-                .whenReleased(()-> m_shooter.setRPM(0));
-
-        g2.getGamepadButton(GamepadKeys.Button.B)
-                .whileHeld(()->m_feeder.setManualPower(-0.4))
-                .whenReleased(()->m_feeder.setManualPower(0));
-
-        g2.getGamepadButton(GamepadKeys.Button.A)
-                        .whileHeld(()->m_feeder.setManualPower(0.4))
-                                .whenReleased(()->m_feeder.setManualPower(0));
-
-
-        g1.getGamepadButton(GamepadKeys.Button.A)
-                .whileHeld(new ParallelCommandGroup(new RunCommand(()-> m_shooter.goToTargetRPM()),
-                        new SequentialCommandGroup(
-                        new WaitCommand(3000).interruptOn(()-> m_shooter.atRPMs(m_shooter.getRPMsDash(), 50)),
-                        new RunCommand(()->m_feeder.setCRSPower(1))
-                )
-                )
-        )
-                .whenReleased(n  ew ParallelCommandGroup(
-                        new InstantCommand(()-> m_shooter.setRPM(0)),
-                        new InstantCommand(()-> m_feeder.setCRSPower(0))
-                ));
-
-//378   1108   1810
-*/
         // Telemetría
         schedule(new RunCommand(() -> {
             telemetry.update();

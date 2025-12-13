@@ -24,13 +24,17 @@ public class Intake extends SubsystemBase {
 
         intake = hw.get(DcMotorEx.class, "intake");
         intake.setDirection(DcMotorSimple.Direction.FORWARD);
-        intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    //    intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void setPower(double power){
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setPower(power);
+    }
+
+    public void resetTicks(){
+        intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     @Override

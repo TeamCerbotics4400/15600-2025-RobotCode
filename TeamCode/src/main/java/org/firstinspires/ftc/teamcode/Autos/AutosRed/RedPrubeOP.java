@@ -6,21 +6,20 @@ import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.RunCommand;
 
-import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Torreta;
+
 @Autonomous
-public class Red extends CommandOpMode {
+public class RedPrubeOP extends CommandOpMode {
 
     MecanumDriveTrain m_drive;
-    AutoSequenceRed red;
+    RedPruevba prueba;
     @Override
     public void initialize() {
-       m_drive = new MecanumDriveTrain(hardwareMap, telemetry, false);
+        m_drive = new MecanumDriveTrain(hardwareMap, telemetry, false);
         Shooter m_shooter = new Shooter(hardwareMap, telemetry);
         Intake m_intake = new Intake(hardwareMap, telemetry);
         Torreta m_torreta = new Torreta(hardwareMap, telemetry);
@@ -30,9 +29,9 @@ public class Red extends CommandOpMode {
         new PathsRed(follower);
 
 
-        red = new AutoSequenceRed(m_drive, m_shooter, m_intake, m_torreta, m_feeder, telemetry);
+        prueba = new RedPruevba(m_drive, m_shooter, m_intake, m_torreta, m_feeder, telemetry);
 
-        schedule(new ParallelCommandGroup(red), new RunCommand(() -> {
+        schedule(new ParallelCommandGroup(prueba), new RunCommand(() -> {
             blackboard.put("endPose", follower.getPose());
             blackboard.put("torretaPosition", m_torreta.ticksToDegrees());
         }

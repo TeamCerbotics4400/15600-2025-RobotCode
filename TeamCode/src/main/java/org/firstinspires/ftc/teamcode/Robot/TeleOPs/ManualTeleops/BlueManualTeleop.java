@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Robot.TeleOPs;
+package org.firstinspires.ftc.teamcode.Robot.TeleOPs.ManualTeleops;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
@@ -9,19 +9,18 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
-import com.seattlesolvers.solverslib.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.Robot.Commands.DriveCommand;
-import org.firstinspires.ftc.teamcode.Robot.Commands.SmartShootCommandRed;
-import org.firstinspires.ftc.teamcode.Robot.Commands.TorretaCommand;
+import org.firstinspires.ftc.teamcode.Robot.Commands.SmartShootCommandBLue;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Feeder;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Torreta;
 
-@TeleOp
-public class RedTeleop extends CommandOpMode {
+@TeleOp(name = "Blue Manual", group = "Manuals")
+public class BlueManualTeleop extends CommandOpMode {
+
     private MecanumDriveTrain m_driveTrain;
     private Intake m_intake;
 
@@ -29,10 +28,10 @@ public class RedTeleop extends CommandOpMode {
     private Torreta m_torreta;
     private Feeder m_feeder;
 
-
     @Override
     public void initialize() {
-        m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, false);
+        m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, true);
+
         m_shooter = new Shooter(hardwareMap, telemetry);
         m_feeder = new Feeder(hardwareMap,telemetry);
         m_torreta = new Torreta(hardwareMap, telemetry);
@@ -43,8 +42,6 @@ public class RedTeleop extends CommandOpMode {
         GamepadEx g1 = new GamepadEx(gamepad1);
         GamepadEx g2 = new GamepadEx(gamepad2);
 
-
-
         // --- CHASIS ---
         m_driveTrain.setDefaultCommand(new DriveCommand(m_driveTrain,
                 g1::getLeftY,
@@ -54,21 +51,27 @@ public class RedTeleop extends CommandOpMode {
 
 
 
-        m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain,m_torreta,telemetry,new Pose2d(131,135,Math.toRadians(0))));
+        g2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
+                .whenPressed(
+                        new InstantCommand(()-> m_feeder.Manual = false));
 
 
-        // --- INTAKE ---
+
+
+
         g1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whileHeld(
                         new ParallelCommandGroup(
                                 new InstantCommand(()-> m_intake.setPower(1)),
-                                new InstantCommand(()-> m_feeder.isIntaking = true)
+                                new InstantCommand(()-> m_feeder.isIntaking = true),
+                                new InstantCommand(()-> m_feeder.Manual = false)
                         ))
                 .whenReleased(
                         new ParallelCommandGroup(
                                 new InstantCommand(() -> m_intake.setPower(0)),
                                 new InstantCommand(()->m_feeder.isIntaking = false)
                         ));
+
 
         g1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whileHeld(
@@ -81,40 +84,7 @@ public class RedTeleop extends CommandOpMode {
                                 new InstantCommand(() -> m_intake.setPower(0))
                         ));
 
-
         g1.getGamepadButton(GamepadKeys.Button.Y)
-                .whileHeld(new SmartShootCommandRed(
-                        m_driveTrain,
-                        m_shooter,
-                        m_feeder,
-                        telemetry,
-                        false,
-                        1000
-                ))
-                .whenReleased(
-                        new ParallelCommandGroup(
-                                new InstantCommand(() -> m_feeder.setCRSPower(0)),
-                                new InstantCommand(() -> m_shooter.setRPM(0)),
-                                new InstantCommand(()->m_feeder.globalSlotPosition = 0),
-                                new InstantCommand(()->m_feeder.globalTargetPosiion = 0),
-                                new InstantCommand(()->m_feeder.setAllfalse()),
-                                //    new RunCommand(()->m_feeder.goToPosition(0.1,-20)).interruptOn(()->m_feeder.limitSwitchGotPressed()),
-                                new InstantCommand(()->m_feeder.goToPosition(0,0)),
-                                new InstantCommand(()-> telemetry.log().add("It did reset"))
-                        )
-                );
-
-        g1.getGamepadButton(GamepadKeys.Button.A)
-                .whileHeld(new ParallelCommandGroup(
-                        new RunCommand(()->m_shooter.goToTargetRPM()),
-                        new RunCommand(()-> m_feeder.setCRSPower(1))
-                ))
-                .whenReleased(new ParallelCommandGroup(
-                        new RunCommand(()->m_shooter.setRPM(0)),
-                        new RunCommand(()-> m_feeder.setCRSPower(0))
-                ));
-/*
-        g1.getGamepadButton(GamepadKeys.Button.B)
                 .whileHeld(new ParallelCommandGroup(
                                 new RunCommand(
                                         () -> m_shooter.setRPM
@@ -129,11 +99,60 @@ public class RedTeleop extends CommandOpMode {
                 .whenReleased(new ParallelCommandGroup(
                         new RunCommand(()-> m_feeder.setCRSPower(0)),
                         new RunCommand(() -> m_shooter.setPower(0))));
-*/
 
-        // Telemetría
-        schedule(new RunCommand(() -> {
-            telemetry.update();
-        }));
+
+        g2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .whileHeld(new ParallelCommandGroup(
+                        new RunCommand(() -> m_feeder.setCRSPower(-1))))
+                .whenReleased(new ParallelCommandGroup(
+                        new RunCommand(() -> m_feeder.setCRSPower(0))));
+
+
+        g2.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whileHeld(new ParallelCommandGroup(
+                        new RunCommand(() -> m_feeder.setCRSPower(1))))
+                .whenReleased(new ParallelCommandGroup(
+                        new RunCommand(() -> m_feeder.setCRSPower(0))));
+
+        g1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .whileHeld(new ParallelCommandGroup(
+                        new RunCommand(() -> m_feeder.setCRSPower(-1))))
+                .whenReleased(new ParallelCommandGroup(
+                        new RunCommand(() -> m_feeder.setCRSPower(0))));
+
+
+        g1.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whileHeld(new ParallelCommandGroup(
+                        new RunCommand(() -> m_feeder.setCRSPower(1))))
+                .whenReleased(new ParallelCommandGroup(
+                        new RunCommand(() -> m_feeder.setCRSPower(0))));
+
+
+        g2.getGamepadButton(GamepadKeys.Button.B)
+                .whileHeld(new ParallelCommandGroup(
+                        new InstantCommand(()->m_feeder.setManualPower(-0.5)),
+                        new InstantCommand(()-> m_feeder.Manual = true)))
+                .whenReleased(new ParallelCommandGroup(
+                        new InstantCommand(()->m_feeder.setManualPower(0)),
+                        new InstantCommand(()-> m_feeder.Manual = true)));
+
+        g2.getGamepadButton(GamepadKeys.Button.A)
+                .whileHeld(new ParallelCommandGroup(
+                        new InstantCommand(()->m_feeder.setManualPower(0.5)),
+                        new InstantCommand(()-> m_feeder.Manual = true)))
+                .whenReleased(new ParallelCommandGroup(
+                        new InstantCommand(()->m_feeder.setManualPower(0)),
+                        new InstantCommand(()-> m_feeder.Manual = true)));
+
+        g2.getGamepadButton(GamepadKeys.Button.START)
+                .whenPressed(()-> m_feeder.resetEncoders());
+
+
+
+
+
+
+
+
     }
 }
