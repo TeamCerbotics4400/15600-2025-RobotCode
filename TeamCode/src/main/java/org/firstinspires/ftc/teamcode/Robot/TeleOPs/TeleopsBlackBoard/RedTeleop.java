@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Torreta;
 
-@TeleOp(name = "RedTeleop", group = "Blackboard")
+/*@TeleOp(name = "RedTeleop", group = "Blackboard")*/
 public class RedTeleop extends CommandOpMode {
     private MecanumDriveTrain m_driveTrain;
     private Intake m_intake;

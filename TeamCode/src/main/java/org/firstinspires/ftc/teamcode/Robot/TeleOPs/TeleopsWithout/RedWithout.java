@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Torreta;
 
-@TeleOp
+//@TeleOp
 
 public class RedWithout extends CommandOpMode {
 

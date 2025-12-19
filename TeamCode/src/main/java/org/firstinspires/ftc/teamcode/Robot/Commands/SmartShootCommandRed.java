@@ -134,12 +134,15 @@ public class SmartShootCommandRed extends SequentialCommandGroup {
 
         if(numberOfBalls == 3){
             if (f.getSlotBallState(2)) {
+                tl.log().add("Index 2");
                 selectedIndex = 2;
                 return 1920;
             } else if (f.getSlotBallState(1)) {
+                tl.log().add("Index 1");
                 selectedIndex = 1;
                 return 1072;   // 2
             } else if (f.getSlotBallState(0)) {
+                tl.log().add("Index 0");
                 selectedIndex = 0;
                 return 370; //bien
             }

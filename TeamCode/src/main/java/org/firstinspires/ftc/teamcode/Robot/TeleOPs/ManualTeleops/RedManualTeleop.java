@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Torreta;
 
-@TeleOp(name = "ManualRed", group = "Manuals")
+@TeleOp(name = "ManualRed son blCK", group = "Manuals")
 public class RedManualTeleop extends CommandOpMode {
 
 
@@ -31,6 +31,12 @@ public class RedManualTeleop extends CommandOpMode {
     @Override
     public void initialize() {
         m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, false);
+
+        com.pedropathing.geometry.Pose pose =
+                (com.pedropathing.geometry.Pose) blackboard.get("endPose");
+
+        m_driveTrain.getFollower().setPose(pose);
+        telemetry.addData("Pose restored", pose);
 
         m_shooter = new Shooter(hardwareMap, telemetry);
         m_feeder = new Feeder(hardwareMap,telemetry);
@@ -59,17 +65,22 @@ public class RedManualTeleop extends CommandOpMode {
 
 
 
+
         g1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whileHeld(
                         new ParallelCommandGroup(
                                 new InstantCommand(()-> m_intake.setPower(1)),
-                                new InstantCommand(()-> m_feeder.isIntaking = true),
-                                new InstantCommand(()-> m_feeder.Manual = false)
+                                //new InstantCommand(()-> m_feeder.isIntaking = true),
+                                new InstantCommand(()-> m_feeder.Manual = true)
                         ))
                 .whenReleased(
                         new ParallelCommandGroup(
-                                new InstantCommand(() -> m_intake.setPower(0))
+                                new InstantCommand(() -> m_intake.setPower(0)),
+                                new InstantCommand(()-> m_feeder.Manual = true)
+                                // new InstantCommand(()->m_feeder.isIntaking = false)
                         ));
+
+
 
 
         g1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
@@ -117,7 +128,7 @@ public class RedManualTeleop extends CommandOpMode {
 
         g2.getGamepadButton(GamepadKeys.Button.B)
                 .whileHeld(new ParallelCommandGroup(
-                        new InstantCommand(()->m_feeder.setManualPower(-0.5)),
+                        new InstantCommand(()->m_feeder.setManualPower(-1)),
                         new InstantCommand(()-> m_feeder.Manual = true)))
                 .whenReleased(new ParallelCommandGroup(
                         new InstantCommand(()->m_feeder.setManualPower(0))
@@ -125,7 +136,7 @@ public class RedManualTeleop extends CommandOpMode {
 
         g2.getGamepadButton(GamepadKeys.Button.A)
                 .whileHeld(new ParallelCommandGroup(
-                        new InstantCommand(()->m_feeder.setManualPower(0.5)),
+                        new InstantCommand(()->m_feeder.setManualPower(1)),
                         new InstantCommand(()-> m_feeder.Manual = true)))
                 .whenReleased(new ParallelCommandGroup(
                         new InstantCommand(()->m_feeder.setManualPower(0))

@@ -130,7 +130,7 @@ public class Feeder extends SubsystemBase {
     }
 
     public boolean detectBall(ColorSensor sensor) {
-        return sensor.alpha() > 120 && sensor.alpha() < 1200;
+        return sensor.alpha() > 110 && sensor.alpha() < 1200;
     }
 
 
@@ -297,11 +297,13 @@ public class Feeder extends SubsystemBase {
         telemetry.addData("S2 hasballInside", slots[1].hasBallInside);
         telemetry.addData("S3 hasballInside", slots[2].hasBallInside);
         telemetry.addData("S1 alpha", s1.alpha());
+        telemetry.addData("S2 alpha", s2.alpha());
+        telemetry.addData("S3 alpha", s3.alpha());
         telemetry.addData("Lavadora slot", globalSlotPosition);
         telemetry.addData("Lavadora target", globalTargetPosiion);
         telemetry.addData("FeederPosition", getPosition());
         telemetry.addData("Is Busy", motorLavadora.isBusy());
-        telemetry.addData("Limit switch presed", limitSwitchGotPressed());
+        telemetry.addData("Limit switch presed", limitSwitchGotPressed());;
 
         TelemetryPacket packet = new TelemetryPacket();
         packet.put("PID Output", m_controller.calculate(getPosition()));

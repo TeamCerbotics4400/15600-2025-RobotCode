@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Torreta;
 
-@TeleOp(name = " BlueTeleop", group = "BleackBoard")
+/*@TeleOp(name = " BlueTeleop", group = "BleackBoard")*/
 public class BlueTeleOp extends CommandOpMode {
 
     private MecanumDriveTrain m_driveTrain;
