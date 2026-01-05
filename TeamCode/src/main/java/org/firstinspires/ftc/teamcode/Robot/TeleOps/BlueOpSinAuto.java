@@ -57,9 +57,6 @@ public class BlueOpSinAuto extends CommandOpMode {
 
         leftTrigger.whileActiveContinuous(new RunCommand(()-> m_intake.setPower(-1)));
 
-        g1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .whileHeld(new RunCommand(() -> m_intake.setPower(-1), m_intake));
-
 
         m_intake.setDefaultCommand(new RunCommand(m_intake::stop, m_intake));
 
