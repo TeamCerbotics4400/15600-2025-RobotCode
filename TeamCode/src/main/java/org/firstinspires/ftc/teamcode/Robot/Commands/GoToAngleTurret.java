@@ -46,7 +46,7 @@ public class GoToAngleTurret extends CommandBase {
     public void execute(){
         double currentAngle = m_turret.getTurretPosition();
 
-        double outputPower = controller.calculate(currentAngle);
+        double outputPower = -controller.calculate(currentAngle);
 
         double clampedPower = Math.min(Math.abs(outputPower), 0.75) * Math.signum(outputPower);
 

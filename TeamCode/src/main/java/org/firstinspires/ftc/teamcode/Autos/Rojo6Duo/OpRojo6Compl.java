@@ -28,7 +28,7 @@ public class OpRojo6Compl extends CommandOpMode {
 
     @Override
     public void initialize() {
-        MecanumDriveTrain m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, false);
+        MecanumDriveTrain m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, false, true);
         Shooter m_shooter = new Shooter(hardwareMap, telemetry);
         Torreta m_torreta = new Torreta(hardwareMap, telemetry);
         Intake m_intake = new Intake(hardwareMap);

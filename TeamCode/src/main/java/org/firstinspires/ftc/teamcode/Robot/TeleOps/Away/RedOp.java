@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.Robot.TeleOps;
+package org.firstinspires.ftc.teamcode.Robot.TeleOps.Away;
 
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.RunCommand;
@@ -8,21 +9,20 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.Robot.Commands.DriveCommand;
-import org.firstinspires.ftc.teamcode.Robot.Commands.GoToAngleTurret;
 import org.firstinspires.ftc.teamcode.Robot.Commands.GoToTargetTurret;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Torreta;
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp
-public class BlueOP extends CommandOpMode {
+@TeleOp(name = "RedOpAway", group = "Away")
+public class RedOp extends CommandOpMode {
 
     private MecanumDriveTrain m_driveTrain;
 
 
     @Override
     public void initialize() {
-        m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, true);
+        m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, false, false);
 
         com.pedropathing.geometry.Pose pose =
                 (com.pedropathing.geometry.Pose) blackboard.get("endPose");
@@ -42,11 +42,11 @@ public class BlueOP extends CommandOpMode {
         Trigger rightTrigger = new Trigger(() -> g1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1);
 
         Trigger shooterReadyTrigger = rightTrigger.and(
-                new Trigger(() -> m_shooter.isShooterReady(m_driveTrain.obtenerDistanciaTarget(true)))
+                new Trigger(() -> m_shooter.isShooterReady(m_driveTrain.obtenerDistanciaTarget(false)))
         );
 
 //autoapuntado desde el enable
-        m_torreta.setDefaultCommand(new GoToTargetTurret(m_torreta, m_driveTrain, telemetry, true));
+        m_torreta.setDefaultCommand(new GoToTargetTurret(m_torreta, m_driveTrain, telemetry, false));
 
 
         /*chasis*/
@@ -101,7 +101,7 @@ public class BlueOP extends CommandOpMode {
 
 //SHOOTER
 
-/*
+
         g1.getGamepadButton(GamepadKeys.Button.Y)
                 .whileHeld(new InstantCommand(()-> m_shooter.setRPM(3000)))
                 .whenReleased(()-> m_shooter.setRPM(0));
@@ -110,17 +110,10 @@ public class BlueOP extends CommandOpMode {
                 .whileHeld(new InstantCommand(()-> m_shooter.setRPM(2800)))
                 .whenReleased(()-> m_shooter.setRPM(0));
 
- */
-
 
 
 
         g1.getGamepadButton(GamepadKeys.Button.X)
-                .whileHeld(new InstantCommand(() -> m_shooter.goToSettedRPM()))
-                .whenReleased(() -> m_shooter.offR(0));
-
-
-        g1.getGamepadButton(GamepadKeys.Button.B)
                 .whileHeld(new InstantCommand(() -> m_shooter.setRPM(2500)))
                 .whenReleased(() -> m_shooter.offR(0));
 
@@ -128,7 +121,7 @@ public class BlueOP extends CommandOpMode {
 
         g1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whileHeld(new InstantCommand(() -> m_shooter.setRPM((int)
-                        m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(true)))))
+                        m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(false)))))
                 .whenReleased(()-> m_shooter.setRPM(0));
 
 

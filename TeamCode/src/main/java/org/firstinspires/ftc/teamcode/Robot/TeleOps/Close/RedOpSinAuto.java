@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.Robot.TeleOps;
+package org.firstinspires.ftc.teamcode.Robot.TeleOps.Close;
 
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
@@ -9,21 +10,20 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.Robot.Commands.DriveCommand;
-import org.firstinspires.ftc.teamcode.Robot.Commands.GoToAngleTurret;
 import org.firstinspires.ftc.teamcode.Robot.Commands.GoToTargetTurret;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Torreta;
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp
-public class BlueOpSinAuto extends CommandOpMode {
+@TeleOp(name = "RedOpSinAutoClose", group = "Close")
+public class RedOpSinAuto extends CommandOpMode {
 
     private MecanumDriveTrain m_driveTrain;
 
 
     @Override
     public void initialize() {
-        m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, true);
+        m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, false,true);
         Intake m_intake = new Intake(hardwareMap);
         Shooter m_shooter = new Shooter(hardwareMap, telemetry);
         Torreta m_torreta = new Torreta(hardwareMap, telemetry);
@@ -36,11 +36,12 @@ public class BlueOpSinAuto extends CommandOpMode {
         Trigger leftTrigger = new Trigger(() -> g1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1);
 
         Trigger shooterReadyTrigger = rightTrigger.and(
-                new Trigger(() -> m_shooter.isShooterReady(m_driveTrain.obtenerDistanciaTarget(true)))
+                new Trigger(() -> m_shooter.isShooterReady(m_driveTrain.obtenerDistanciaTarget(false)))
         );
 
-//autoapuntado desde el enable
-        m_torreta.setDefaultCommand(new GoToTargetTurret(m_torreta, m_driveTrain, telemetry, true));
+        //TORRETA
+        //autoapuntado desde el enable
+        m_torreta.setDefaultCommand(new GoToTargetTurret(m_torreta, m_driveTrain, telemetry, false));
 
 
         /*chasis*/
@@ -48,7 +49,7 @@ public class BlueOpSinAuto extends CommandOpMode {
                 () -> g1.getLeftY(),
                 g1::getRightX,
                 g1::getLeftX,
-                true));
+                false));
 
         /*INTAKE*/
 
@@ -65,40 +66,15 @@ public class BlueOpSinAuto extends CommandOpMode {
 
         rightTrigger
                 .whileActiveContinuous(new ParallelCommandGroup(
-                        new RunCommand(()->m_intake.setPower(.6)),
+                        new RunCommand(()->m_intake.setPower(.75)),
                         new RunCommand(()-> m_intake.shoot()))
                 )
                 .whenInactive(
                         new RunCommand(() -> m_intake.close())
                 );
 
-        g1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-                .whenPressed(new InstantCommand(() -> m_intake.setAngle()));
 
 
-
-
-
-/*
-        g1.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-                        .whileHeld(()-> m_intake.feed())
-                .whenReleased(()-> m_intake.stop());
-
-
-
-        shooterReadyTrigger
-                .whileActiveContinuous(() -> m_intake.feed())
-                .whenInactive(() -> m_intake.stop());
-
-*/
-
-
-//TORRETA
-
-
-        g1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
-                .whileHeld(() -> m_torreta.setPower(-1))
-                .whenReleased(() -> m_torreta.setPower(0));
 
 
 //SHOOTER
@@ -106,27 +82,24 @@ public class BlueOpSinAuto extends CommandOpMode {
 
         /*g1.getGamepadButton(GamepadKeys.Button.Y)
                 .whileHeld(new InstantCommand(()-> m_shooter.setRPM(3000)))
-                .whenReleased(()-> m_shooter.setRPM(0));*/
+                .whenReleased(()-> m_shooter.setRPM(0));
+
+        g1.getGamepadButton(GamepadKeys.Button.B)
+                .whileHeld(new InstantCommand(()-> m_shooter.setRPM(2800)))
+                .whenReleased(()-> m_shooter.setRPM(0));
+
+
 
 
         g1.getGamepadButton(GamepadKeys.Button.X)
-                .whileHeld(new InstantCommand(() -> m_shooter.goToSettedRPM()))
-                .whenReleased(() -> m_shooter.offR(0));
-
-        g1.getGamepadButton(GamepadKeys.Button.B)
-                .whileHeld(new InstantCommand(() -> m_shooter.setPower()))
-                .whenReleased(() -> m_shooter.offR(0));
-
-        g1.getGamepadButton(GamepadKeys.Button.A)
                 .whileHeld(new InstantCommand(() -> m_shooter.setRPM(2500)))
-                .whenReleased(() -> m_shooter.offR(0));
+                .whenReleased(() -> m_shooter.offR(0));*/
 
 
 
-
-       g1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+        g1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whileHeld(new InstantCommand(() -> m_shooter.setRPM((int)
-                        m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(true)))))
+                        m_shooter.getInterpolatedShoot(m_driveTrain.obtenerDistanciaTarget(false)))))
                 .whenReleased(()-> m_shooter.setRPM(0));
 
 

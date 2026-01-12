@@ -30,7 +30,7 @@ public class OpAzul6Duo extends CommandOpMode {
 
     @Override
     public void initialize() {
-        MecanumDriveTrain m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, true);
+        MecanumDriveTrain m_driveTrain = new MecanumDriveTrain(hardwareMap, telemetry, true, true);
         Shooter m_shooter = new Shooter(hardwareMap, telemetry);
         Torreta m_torreta = new Torreta(hardwareMap, telemetry);
         Intake m_intake = new Intake(hardwareMap);

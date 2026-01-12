@@ -32,12 +32,12 @@ public class GoToTargetTurret extends CommandBase {
     PIDController controller;
     private Telemetry telemetry;
 
-    public static  double kP = 0.018;//0.018
-    public static  double kI = 0.1;//0.1
-    public static  double kD = 0.0032;//0.0032
+    public static  double kP = 0.018;//0.0142
+    public static  double kI = 0.1;
+    public static  double kD = 0.0032;
 
-    private static final double MAX_ANGLE = 21;//21
-    private static final double MIN_ANGLE = -249;//-249
+    private static final double MAX_ANGLE = 285.0;
+    private static final double MIN_ANGLE = -30;
     private static final double ANGLE_TOLERANCE = 2.0;
     public GoToTargetTurret(Torreta m_turret, MecanumDriveTrain m_drive, Telemetry telemetry, boolean isBlueAlliance){
         this.m_turret = m_turret;
@@ -47,7 +47,7 @@ public class GoToTargetTurret extends CommandBase {
         this.ftcDashboard = FtcDashboard.getInstance();
 
         if (isBlueAlliance) {//BLUE
-            this.targetPose = new Pose(32, 137);//cancha 2 mucho x no jalo con 12
+            this.targetPose = new Pose(12, 134);
         } else {//RED
             this.targetPose = new Pose(140, 140);
         }
@@ -72,6 +72,7 @@ public class GoToTargetTurret extends CommandBase {
 
         turretRelativeAngleDeg = Math.toDegrees(turretRelativeAngleRad);
 
+
         double limitedAngle = Math.max(MIN_ANGLE, Math.min(MAX_ANGLE, turretRelativeAngleDeg));
 
         return limitedAngle;
@@ -94,14 +95,13 @@ public class GoToTargetTurret extends CommandBase {
 
         double error = targetAngle - currentAngle;
 
-        double outputPower = -controller.calculate(error);
+        double outputPower = controller.calculate(error);
 
         double clampedPower = Math.min(Math.abs(outputPower), 0.75) * Math.signum(outputPower);
 
         m_turret.setPower(0);
 
         telemetry.addData("Target (deg)", targetAngle);
-        telemetry.addData("Calculate Target (deg)", calculateTargetTurretAngle());
         telemetry.addData("Target Absoluto", Math.toDegrees(absoluteTargetAngleRad));
         telemetry.addData("Target Relativo", turretRelativeAngleDeg);
         telemetry.addData("Current (deg)", currentAngle);

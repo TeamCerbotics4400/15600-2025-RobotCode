@@ -29,6 +29,12 @@ public class Torreta extends SubsystemBase {
     Telemetry telemetry;
     FtcDashboard ftcDashboard;
 
+    private static double P = 0.018 ;//0.015
+    private static double I = 0.05;
+    private static double D = 0.0015;//
+    public static PIDController pidController = new PIDController(P,I,D);
+    private boolean pidMode = false;
+
 
     public Torreta(HardwareMap hardwareMap, Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
@@ -38,7 +44,8 @@ public class Torreta extends SubsystemBase {
         torreta2 = hardwareMap.get(CRServo.class, "torreta2");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
 
-        intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         torreta.setDirection(DcMotorSimple.Direction.FORWARD);
         torreta2.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -58,30 +65,47 @@ public class Torreta extends SubsystemBase {
         torreta2.setPower(power);
     }
 
+    public void setTurretPosition(double degrees){
+        pidMode = true;
+        pidController.setSetPoint(degrees);
+    }
+
     public double getTurretPosition(){
         double currentDegrees = ticksToDegrees();
-        return currentDegrees - 4;
+        return -currentDegrees;
     }
 
 
     public double ticksToDegrees(){
         double motorTicksPerRev = 8192;
-        int ticks = -intake.getCurrentPosition();
-        double gearRatio = 7;
+        int ticks = intake.getCurrentPosition();
+        double gearRatio = 5;
         double ticksPerTurretRev = motorTicksPerRev * gearRatio;
-        return ((ticks / ticksPerTurretRev) * 360)+4;
+        return ((ticks / ticksPerTurretRev) * 360);
     }
 
 
 
     @Override
     public void periodic() {
+        double currentDegrees = -ticksToDegrees();
 
+        pidController.setPID(P,Math.abs(pidController.getPositionError()) < 0.9 ?0:I,D);
+
+        double power = pidController.calculate(currentDegrees);
+
+        if ((currentDegrees <= -339 && power < 0) || (currentDegrees >= 35 && power > 0)) {
+            power = 0;
+        }
+//65   -196
+        if(pidMode){
+            torreta.setPower(power);
+        }
 
 
         // Telemetría
         telemetry.addData("Torreta Posicion", intake.getCurrentPosition());
-        telemetry.addData("Torreta grados", getTurretPosition());
+        telemetry.addData("Torreta grados", currentDegrees);
 
     }
 

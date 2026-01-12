@@ -29,30 +29,40 @@ public class MecanumDriveTrain extends SubsystemBase {
     Panels panels;
     static PoseHistory poseHistory;
 
-    public static double YPod = 6.1;
-    public static double XPod = -0.21;
+    public static double YPod = -4;
+    public static double XPod = 0.23;
 
 
     static TelemetryManager telemetryM;
     Pose azulGOAL = new Pose(12.5, 134);
-    Pose rojoGOAL = new Pose(140, 140);
+    Pose rojoGOAL = new Pose(131, 139);
 
     boolean isBlueAlliance;
     boolean isClose;
 
 
-    public MecanumDriveTrain(HardwareMap hw, Telemetry tl, boolean isBlueAlliance) {
+    public MecanumDriveTrain(HardwareMap hw, Telemetry tl, boolean isBlueAlliance, boolean isClose) {
         this.hw = hw;
         this.tl = tl;
         this.m_follower = Constants.createFollower(hw);
         poseHistory = m_follower.getPoseHistory();
         this.isBlueAlliance = isBlueAlliance;
+        this.isClose = isClose;
         if(isBlueAlliance){
-            this.m_follower.setPose(new Pose(26.031, 132.185, Math.toRadians(90)));//normal
+            if(isClose) {
+                this.m_follower.setPose(new Pose(26.031, 132.185, Math.toRadians(135)));//normal
+            }else{
+                this.m_follower.setPose(new Pose(62.592, 8.679, Math.toRadians(90)));//normal
+            }
             //this.m_follower.setPose(new Pose(55.75, 9.23, Math.toRadians(90)));//Complemento
 
         }else{
-            this.m_follower.setPose(new Pose(118.892, 132.923, Math.toRadians(45)));//normal
+            if(isClose) {
+                this.m_follower.setPose(new Pose(118.892, 132.923, Math.toRadians(45)));//normal
+            }else{
+                this.m_follower.setPose(new Pose(97.848, 10.832, Math.toRadians(90)));//normal
+
+            }
             //this.m_follower.setPose(new Pose(87.877, 8.123, Math.toRadians(90)));//Complemento
         }
         setSubsystem("DriveTrain");
@@ -109,9 +119,9 @@ public class MecanumDriveTrain extends SubsystemBase {
 
     public void setDrive(double y, double x, double turn, boolean robotCentric) {
         if(isBlueAlliance) {
-            m_follower.setTeleOpDrive(-y, -x, turn, true);
+            m_follower.setTeleOpDrive(y, x, turn, false);
         }else{
-            m_follower.setTeleOpDrive(y, x, turn, true);
+            m_follower.setTeleOpDrive(-y, -x, turn, false);
         }
     }
 
