@@ -23,15 +23,16 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Torreta extends SubsystemBase {
 
-    CRServo torreta, torreta2;
-    DcMotorEx intake;
+    //CRServo torreta, torreta2;
+    DcMotorEx intake, torreta;
     HardwareMap hardwareMap;
     Telemetry telemetry;
     FtcDashboard ftcDashboard;
 
-    private static double P = 0.018 ;//0.015
-    private static double I = 0.05;
-    private static double D = 0.0015;//
+    public static double P = 0.05 ;//0.06
+    public static double I = 0.1;
+    public static double D = 0.0009;//
+
     public static PIDController pidController = new PIDController(P,I,D);
     private boolean pidMode = false;
 
@@ -40,15 +41,16 @@ public class Torreta extends SubsystemBase {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
 
-        torreta = hardwareMap.get(CRServo.class, "torreta");
-        torreta2 = hardwareMap.get(CRServo.class, "torreta2");
+        //torreta = hardwareMap.get(CRServo.class, "torreta");
+        //torreta2 = hardwareMap.get(CRServo.class, "torreta2");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
+        torreta = hardwareMap.get(DcMotorEx.class, "torreta");
 
         //intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        torreta.setDirection(DcMotorSimple.Direction.FORWARD);
-        torreta2.setDirection(DcMotorSimple.Direction.FORWARD);
+        //torreta.setDirection(DcMotorSimple.Direction.FORWARD);
+        //torreta2.setDirection(DcMotorSimple.Direction.FORWARD);
 
         this.ftcDashboard = FtcDashboard.getInstance();
 
@@ -62,7 +64,7 @@ public class Torreta extends SubsystemBase {
     }
     public void setPower(double power) {
         torreta.setPower(power);
-        torreta2.setPower(power);
+        //torreta2.setPower(power);
     }
 
     public void setTurretPosition(double degrees){
@@ -93,8 +95,8 @@ public class Torreta extends SubsystemBase {
         pidController.setPID(P,Math.abs(pidController.getPositionError()) < 0.9 ?0:I,D);
 
         double power = pidController.calculate(currentDegrees);
-
-        if ((currentDegrees <= -339 && power < 0) || (currentDegrees >= 35 && power > 0)) {
+        //                     -339                                     35
+        if ((currentDegrees <= -350 && power < 0) || (currentDegrees >= 17 && power > 0)) {
             power = 0;
         }
 //65   -196
@@ -106,6 +108,13 @@ public class Torreta extends SubsystemBase {
         // Telemetría
         telemetry.addData("Torreta Posicion", intake.getCurrentPosition());
         telemetry.addData("Torreta grados", currentDegrees);
+
+        TelemetryPacket packet = new TelemetryPacket();
+        packet.put("PID Output", power);
+        packet.put("Graph degrees",currentDegrees );
+        packet.put("Graph setpoint", pidController.getSetPoint());
+
+        ftcDashboard.sendTelemetryPacket(packet);
 
     }
 

@@ -49,7 +49,7 @@ public class BlueOpSinAuto extends CommandOpMode {
         //autoapuntado desde el enable
         //m_torreta.setDefaultCommand(new GoToTargetTurret(m_torreta, m_driveTrain, telemetry, true));
         //m_torreta.setDefaultCommand(new AimTurretAtPoint(m_torreta, m_driveTrain, telemetry, true));
-        m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain, m_torreta, telemetry, new Pose2d(12, 146, Math.toRadians(0))));
+        m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain, m_torreta, telemetry, new Pose2d(12, 140, Math.toRadians(0))));
 
         /*chasis*/
         m_driveTrain.setDefaultCommand(new DriveCommand(m_driveTrain,

@@ -50,9 +50,9 @@ public class MecanumDriveTrain extends SubsystemBase {
         this.isClose = isClose;
         if(isBlueAlliance){
             if(isClose) {
-                this.m_follower.setPose(new Pose(26.031, 132.185, Math.toRadians(135)));//normal
+                this.m_follower.setPose(new Pose(26.031, 132.185, Math.toRadians(135)));//normal 26.031 132.185 135
             }else{
-                this.m_follower.setPose(new Pose(62.592, 8.679, Math.toRadians(90)));//normal
+                this.m_follower.setPose(new Pose(62.592, 8.679, Math.toRadians(90)));//normal 62.592 8.679 90
             }
             //this.m_follower.setPose(new Pose(55.75, 9.23, Math.toRadians(90)));//Complemento
 

@@ -8,11 +8,13 @@ import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
+import com.seattlesolvers.solverslib.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.Robot.Commands.AimTurretAtPoint;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DriveCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.GoToAngleTurret;
 import org.firstinspires.ftc.teamcode.Robot.Commands.GoToTargetTurret;
+import org.firstinspires.ftc.teamcode.Robot.Commands.Torreta.TorretaCommand;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Shooter;
@@ -43,8 +45,9 @@ public class BlueOpSinAuto extends CommandOpMode {
 
         //TORRETA
         //autoapuntado desde el enable
-        m_torreta.setDefaultCommand(new GoToTargetTurret(m_torreta, m_driveTrain, telemetry, true));
+        //m_torreta.setDefaultCommand(new GoToTargetTurret(m_torreta, m_driveTrain, telemetry, true));
         //m_torreta.setDefaultCommand(new AimTurretAtPoint(m_torreta, m_driveTrain, telemetry, true));
+        m_torreta.setDefaultCommand(new TorretaCommand(m_driveTrain, m_torreta, telemetry, new Pose2d(10.5, 138, Math.toRadians(0))));
 
 
         /*chasis*/
